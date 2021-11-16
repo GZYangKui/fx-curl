@@ -10,14 +10,14 @@ set(CMAKE_CXX_FLAGS  "-rdynamic")
 
 find_package(PkgConfig REQUIRED)
 
-
 pkg_search_module(GTK3 REQUIRED gtk+-3.0)
 
 aux_source_directory(. SOURCE_DIR)
-aux_source_directory(./headers HEADER_DIR)
+aux_source_directory(./include SOURCE_DIR)
+aux_source_directory(./event SOURCE_DIR)
 
-MESSAGE(${GTK3_LIBRARIES})
+MESSAGE(${SOURCE_DIR})
 
-add_executable(c_api ${SOURCE_DIR} ${HEADER_DIR})
+add_executable(fxcurl ${SOURCE_DIR})
 include_directories(${GTK3_INCLUDE_DIRS})
-target_link_libraries(c_api ${GTK3_LIBRARIES})
+target_link_libraries(fxcurl ${GTK3_LIBRARIES})
