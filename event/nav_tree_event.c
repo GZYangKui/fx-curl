@@ -179,35 +179,4 @@ void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *event) {
     }
 }
 
-GtkTreeModel *init_fill_model(void) {
-
-    GtkTreeIter toplevel, child;
-    GtkTreeStore *treeStore = gtk_tree_store_new(NUM_COLS,
-                                                 G_TYPE_OBJECT,
-                                                 G_TYPE_STRING,
-                                                 G_TYPE_INT);
-
-
-    gtk_tree_store_append(treeStore, &toplevel, NULL);
-
-    GdkPixbuf *pixBuf = gdk_pixbuf_new_from_resource("/cn/navclub/img/api_folder.svg", NULL);
-
-    gtk_tree_store_set(treeStore, &toplevel,
-                       ICON_COLUMN, pixBuf,
-                       TEXT_COLUMN, "ddddddddddddddddddd",
-                       COL_TYPE, FOLDER,
-                       -1);
-
-    gtk_tree_store_append(treeStore, &child, &toplevel);
-    gtk_tree_store_set(treeStore, &child,
-                       ICON_COLUMN, pixBuf,
-                       TEXT_COLUMN, "fffffffffffffffffffffffffffffff",
-                       COL_TYPE, API,
-                       -1);
-
-    g_object_unref(pixBuf);
-
-    return GTK_TREE_MODEL(treeStore);
-}
-
 
