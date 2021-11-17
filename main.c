@@ -53,6 +53,7 @@ static void activate(GtkApplication *app, gpointer user_data) {
     gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
     gtk_window_set_default_size(GTK_WINDOW(window), WINDOW_WIDTH, WINDOW_HEIGHT);
 
+    fx_init_sqlite();
     fx_init_nav_tree(builder);
     fx_inti_nav_notebook(builder);
 
@@ -67,4 +68,6 @@ int main(int argc, char **argv) {
     g_signal_connect (app, "activate", G_CALLBACK(activate), NULL);
 
     g_application_run(G_APPLICATION(app), argc, argv);
+
+    fx_shutdown_sqlite3();
 }
