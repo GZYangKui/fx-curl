@@ -31,7 +31,11 @@ MenuItemMeta itemMetas[] = {
         }
 };
 
-void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *event);
+static void do_create_folder(GtkTreeIter *parent);
+
+
+static void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *event);
+
 
 extern void fx_init_nav_tree(GtkBuilder *_builder) {
     builder = _builder;
@@ -70,31 +74,15 @@ extern void fx_init_nav_tree(GtkBuilder *_builder) {
 
 }
 
-extern void fx_dy_dir(GtkButton *button,gpointer userData){
-    GdkPixbuf *pixBuf;
-    GtkTreeIter iter;
-    GtkTreeStore *treeStore;
-
-    treeStore = GTK_TREE_STORE(treeModel);
-
-    gchar *folderIcon = "/cn/navclub/img/api_folder.svg";
-    pixBuf = gdk_pixbuf_new_from_resource(folderIcon,NULL);
-    gtk_tree_store_append(treeStore,&iter,NULL);
-    gtk_tree_store_set(treeStore,&iter,
-                       ICON_COLUMN,pixBuf,
-                       TEXT_COLUMN,"New Collection",
-                       -1);
-    g_object_unref(pixBuf);
+extern void fx_dy_dir(GtkButton *button, gpointer userData) {
+    do_create_folder(NULL);
 }
-
 
 
 void menu_item_select(GtkMenuItem *item, GdkEvent *event, gpointer *userData) {
     GtkTreeIter iter;
     GtkTreePath *path;
-    GtkTreeModel *treeModel;
     GtkTreeSelection *selection;
-    treeModel = gtk_tree_view_get_model(GTK_TREE_VIEW(navTree));
     selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(navTree));
     GList *list = gtk_tree_selection_get_selected_rows(selection, NULL);
     guint len = g_list_length(list);
@@ -102,17 +90,16 @@ void menu_item_select(GtkMenuItem *item, GdkEvent *event, gpointer *userData) {
         return;
     }
     MenuItemMeta *select;
-    GtkTreeStore *store;
     select = (MenuItemMeta *) userData;
     path = list->data;
     gtk_tree_model_get_iter(treeModel, &iter, path);
+    //添加请求
     if (select == &itemMetas[0]) {
 
     }
-    //add folder
+    //新增文件夹
     if (select == &itemMetas[1]) {
-//        gtk_tree_store_append()
-//        gtk_tree_store_set()
+        do_create_folder(&iter);
     }
     g_list_free(list);
 }
@@ -122,11 +109,10 @@ extern gboolean fx_nav_tree_click(GtkWidget *treeView, GdkEventButton *event, gp
     if (event->type == GDK_BUTTON_PRESS && event->button == 3) {
         gint x, y;
         GtkTreePath *path;
-        GtkTreeModel *treeModel;
         GtkTreeSelection *selection;
 
-        x = (gint)(event->x);
-        y = (gint)(event->y);
+        x = (gint) (event->x);
+        y = (gint) (event->y);
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
         if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeView), x, y, &path, NULL, NULL, NULL)) {
             return FALSE;
@@ -134,7 +120,6 @@ extern gboolean fx_nav_tree_click(GtkWidget *treeView, GdkEventButton *event, gp
 
         gtk_tree_selection_unselect_all(selection);
         gtk_tree_selection_select_path(selection, path);
-        treeModel = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
 
         GtkTreeIter iter;
 
@@ -148,7 +133,6 @@ extern gboolean fx_nav_tree_click(GtkWidget *treeView, GdkEventButton *event, gp
                 COL_TYPE, &colType,
                 -1
         );
-        printf("选中列=%s,type=%d\n", text, colType);
         gtk_tree_path_free(path);
         do_popup_menu(GTK_TREE_VIEW(treeView), colType, event);
         return TRUE;
@@ -157,7 +141,7 @@ extern gboolean fx_nav_tree_click(GtkWidget *treeView, GdkEventButton *event, gp
 }
 
 
-void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *event) {
+static void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *event) {
     GtkWidget *menu;
     menu = gtk_menu_new();
     gint index = 0;
@@ -175,6 +159,22 @@ void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *event) {
     if (index > 0) {
         gtk_menu_popup_at_pointer(GTK_MENU(menu), NULL);
     }
+}
+
+static void do_create_folder(GtkTreeIter *parent){
+    GdkPixbuf *pixBuf;
+    GtkTreeIter iter;
+    GtkTreeStore *treeStore;
+
+    treeStore = GTK_TREE_STORE(treeModel);
+
+    pixBuf = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(api_folder.svg), NULL);
+    gtk_tree_store_append(treeStore, &iter, parent);
+    gtk_tree_store_set(treeStore, &iter,
+                       ICON_COLUMN, pixBuf,
+                       TEXT_COLUMN, "New Collection",
+                       -1);
+    g_object_unref(pixBuf);
 }
 
 

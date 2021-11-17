@@ -6,7 +6,7 @@
 #define FXCURL_NAV_TREE_EVENT_H
 
 #include <gtk/gtk.h>
-
+#include "common.h"
 
 
 typedef enum {
@@ -52,7 +52,7 @@ extern void fx_init_nav_tree(GtkBuilder *builder);
 /**
  * create a empty folder
  */
-extern void fx_dy_dir(GtkButton *button,gpointer userData);
+extern void fx_dy_dir(GtkButton *button, gpointer userData);
 
 /**
  *

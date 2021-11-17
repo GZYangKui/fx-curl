@@ -7,10 +7,14 @@
 #define WINDOW_WIDTH 1300
 #define WINDOW_HEIGHT 800
 #define WINDOW_TITLE "FxCurl"
+
+/**
+ * 应用logo列表
+ */
 gchar *logos[] = {
-        "/cn/navclub/img/logo.svg",
-        "/cn/navclub/img/logo2x.svg",
-        "/cn/navclub/img/logo3x.svg"
+        GET_INNER_IMG_RESOURCE(logo.svg),
+        GET_INNER_IMG_RESOURCE(logo2x.svg),
+        GET_INNER_IMG_RESOURCE(logo3x.svg)
 };
 
 static void activate(GtkApplication *app, gpointer user_data) {
@@ -19,8 +23,6 @@ static void activate(GtkApplication *app, gpointer user_data) {
     GtkBuilder *builder;
 
     icons = g_list_alloc();
-
-    printf("len=%d\n", g_list_length(icons));
 
 
     window = gtk_application_window_new(app);
@@ -36,8 +38,10 @@ static void activate(GtkApplication *app, gpointer user_data) {
             icons = g_list_append(icons, pixBuf);
         }
     }
-    gtk_window_set_icon_list(GTK_WINDOW(window),icons);
-    builder = gtk_builder_new_from_resource("/cn/navclub/ui/MainView.ui");
+    gtk_window_set_icon_list(GTK_WINDOW(window), icons);
+    g_list_free(icons);
+
+    builder = gtk_builder_new_from_resource(GET_INNER_UI_RESOURCE(MainView.ui));
 
     GObject *obj = gtk_builder_get_object(builder, "main-box");
 

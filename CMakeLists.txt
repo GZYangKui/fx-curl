@@ -18,6 +18,6 @@ aux_source_directory(./event SOURCE_DIR)
 
 MESSAGE(${SOURCE_DIR})
 
-add_executable(fxcurl ${SOURCE_DIR})
+add_executable(fxcurl ${SOURCE_DIR} include/common.h)
 include_directories(${GTK3_INCLUDE_DIRS})
 target_link_libraries(fxcurl ${GTK3_LIBRARIES})
