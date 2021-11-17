@@ -2,31 +2,31 @@
 // Created by yangkui on 2021/11/16.
 //
 
+#include "../include/ui_util.h"
 #include "../include/nav_tree_event.h"
 
 GtkWidget *navTree;
 GtkTreeModel *treeModel;
-static GtkBuilder *builder;
 
 MenuItemMeta itemMetas[] = {
         {
-                "Add Request",
+                "新增请求",
                 FOLDER
         },
         {
-                "Add Folder",
+                "新增目录",
                 FOLDER
         },
         {
-                "Rename",
+                "重命名",
                 ALL
         },
         {
-                "Delete",
+                "删除",
                 ALL
         },
         {
-                "Export",
+                "导出",
                 FOLDER
         }
 };
@@ -37,8 +37,7 @@ static void do_create_folder(GtkTreeIter *parent);
 static void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *event);
 
 
-extern void fx_init_nav_tree(GtkBuilder *_builder) {
-    builder = _builder;
+extern void fx_init_nav_tree(GtkBuilder *builder) {
     GtkTreeViewColumn *col1;
     GtkTreeViewColumn *col2;
     GtkCellRenderer *textRen, *iconRen;
@@ -161,18 +160,28 @@ static void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *e
     }
 }
 
-static void do_create_folder(GtkTreeIter *parent){
+static void do_create_folder(GtkTreeIter *parent) {
     GdkPixbuf *pixBuf;
     GtkTreeIter iter;
     GtkTreeStore *treeStore;
 
     treeStore = GTK_TREE_STORE(treeModel);
+    gint maxInputLen = 255;
+
+    gchar buffer[maxInputLen];
+    memset(buffer, 0, maxInputLen);
+    guint64 len = open_input_dialog("请输入目录名称", NULL, maxInputLen, buffer);
+
+    //输入为空或者取消不做处理
+    if (len <= 0) {
+        return;
+    }
 
     pixBuf = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(api_folder.svg), NULL);
     gtk_tree_store_append(treeStore, &iter, parent);
     gtk_tree_store_set(treeStore, &iter,
                        ICON_COLUMN, pixBuf,
-                       TEXT_COLUMN, "New Collection",
+                       TEXT_COLUMN, buffer,
                        -1);
     g_object_unref(pixBuf);
 }
