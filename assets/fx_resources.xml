@@ -3,5 +3,8 @@
     <gresource prefix="/cn/navclub">
         <file compressed="true">ui/MainView.ui</file>
         <file>img/api_folder.svg</file>
+        <file>img/logo.svg</file>
+        <file>img/logo2x.svg</file>
+        <file>img/logo3x.svg</file>
     </gresource>
 </gresources>

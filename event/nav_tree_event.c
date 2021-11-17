@@ -136,7 +136,6 @@ extern gboolean fx_nav_tree_click(GtkWidget *treeView, GdkEventButton *event, gp
         gtk_tree_selection_select_path(selection, path);
         treeModel = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
 
-        printf("path=%s\n", gtk_tree_path_to_string(path));
         GtkTreeIter iter;
 
         gtk_tree_model_get_iter(treeModel, &iter, path);
@@ -170,7 +169,6 @@ void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *event) {
         GtkWidget *item = gtk_menu_item_new_with_label(meta.name);
         gtk_widget_show(item);
         gtk_menu_attach(GTK_MENU(menu), item, 0, 1, index, index + 1);
-        printf("%p\n", &meta);
         g_signal_connect(item, "button-release-event", G_CALLBACK(menu_item_select), &itemMetas[i]);
         ++index;
     }

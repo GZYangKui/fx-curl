@@ -6,14 +6,37 @@
 
 #define WINDOW_WIDTH 1300
 #define WINDOW_HEIGHT 800
-#define WINDOW_TITLE "CurlFX"
+#define WINDOW_TITLE "FxCurl"
+gchar *logos[] = {
+        "/cn/navclub/img/logo.svg",
+        "/cn/navclub/img/logo2x.svg",
+        "/cn/navclub/img/logo3x.svg"
+};
 
 static void activate(GtkApplication *app, gpointer user_data) {
+    GList *icons;
     GtkWidget *window;
     GtkBuilder *builder;
 
+    icons = g_list_alloc();
+
+    printf("len=%d\n", g_list_length(icons));
+
+
     window = gtk_application_window_new(app);
 
+    for (int i = 0; i < 3; ++i) {
+        gchar *logo;
+        GdkPixbuf *pixBuf;
+        logo = *(logos + i);
+        pixBuf = gdk_pixbuf_new_from_resource(logo, NULL);
+        if (i == 0) {
+            icons->data = pixBuf;
+        } else {
+            icons = g_list_append(icons, pixBuf);
+        }
+    }
+    gtk_window_set_icon_list(GTK_WINDOW(window),icons);
     builder = gtk_builder_new_from_resource("/cn/navclub/ui/MainView.ui");
 
     GObject *obj = gtk_builder_get_object(builder, "main-box");
@@ -34,7 +57,6 @@ static void activate(GtkApplication *app, gpointer user_data) {
 
 int main(int argc, char **argv) {
     GtkApplication *app;
-
 
     app = gtk_application_new("cn.navclub", G_APPLICATION_FLAGS_NONE);
 
