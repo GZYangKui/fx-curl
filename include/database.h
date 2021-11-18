@@ -7,6 +7,10 @@
 
 #include <gtk/gtk.h>
 
+typedef struct {
+
+} ThreadPoolExecutor;
+
 /**
  *
  * 初始化数据库连接

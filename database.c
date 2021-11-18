@@ -8,41 +8,44 @@
 
 static sqlite3 *context;
 
-static void check_db_struct();
+static gpointer check_db_struct(gpointer *userData);
+
 
 extern gboolean fx_init_sqlite() {
     int rs = sqlite3_open("./data/fxcurl.db", &context);
     gboolean ok = (rs == SQLITE_OK);
     if (!ok) {
         printf("sqlite open failed=%d\n", rs);
-    } else{
-        check_db_struct();
+    } else {
+        //开辟新线程检查数据库是否完整
+        g_thread_new("check-db_struct-thread", check_db_struct, NULL);
     }
     return ok;
 }
 
-extern void fx_shutdown_sqlite3(){
-    if (context==NULL){
+extern void fx_shutdown_sqlite3() {
+    if (context == NULL) {
         return;
     }
     gint ok = sqlite3_shutdown();
     gchar text[255];
-    memset(text,0,255);
+    memset(text, 0, 255);
     gchar *pointer = text;
-    if (ok == SQLITE_OK){
-        strncpy(pointer,"Success shutdown sqlite database!",254);
-    }else{
-        sprintf(pointer,"Failed shutdown sqlite database failed code:%d",ok);
+    if (ok == SQLITE_OK) {
+        strncpy(pointer, "Success shutdown sqlite database!", 254);
+    } else {
+        sprintf(pointer, "Failed shutdown sqlite database failed code:%d", ok);
     }
-    printf("%s\n",text);
+    printf("%s\n", text);
 }
 
 /**
  * 检查数据库表结构
  */
-static void check_db_struct(){
+static gpointer check_db_struct(gpointer *data) {
 
 }
+
 
 
 

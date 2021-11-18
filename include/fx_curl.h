@@ -9,4 +9,9 @@
 #include "nav_tree_event.h"
 #include "nav_notebook_event.h"
 
+/**
+ * 打开主窗口
+ */
+extern void open_fx_curl();
+
 #endif //FXCURL_FX_CURL_H
