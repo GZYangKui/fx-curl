@@ -17,6 +17,11 @@ gchar *logos[] = {
         GET_INNER_IMG_RESOURCE(logo3x.svg)
 };
 
+/**
+ * 线程池
+ */
+GThreadPool *threadPool;
+
 static void activate(GtkApplication *app, gpointer user_data) {
     GList *icons;
     GtkWidget *window;
@@ -60,14 +65,21 @@ static void activate(GtkApplication *app, gpointer user_data) {
     gtk_widget_show_all(window);
 }
 
+void threadPoolTask(gpointer data,gpointer userData){
+    printf("测试\n");
+}
+
 int main(int argc, char **argv) {
     GtkApplication *app;
+
+    threadPool = g_thread_pool_new(threadPoolTask,NULL,3,FALSE,NULL);
 
     app = gtk_application_new("cn.navclub", G_APPLICATION_FLAGS_NONE);
 
     g_signal_connect (app, "activate", G_CALLBACK(activate), NULL);
+    g_thread_pool_push(threadPool,"=====test=====",NULL);
 
     g_application_run(G_APPLICATION(app), argc, argv);
-
     fx_shutdown_sqlite3();
+    g_thread_pool_free(threadPool,TRUE,TRUE);
 }

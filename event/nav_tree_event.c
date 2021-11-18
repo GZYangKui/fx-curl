@@ -106,20 +106,26 @@ void menu_item_select(GtkMenuItem *item, GdkEvent *event, gpointer *userData) {
 
 extern gboolean fx_nav_tree_click(GtkWidget *treeView, GdkEventButton *event, gpointer *userData) {
     if (event->type == GDK_BUTTON_PRESS && event->button == 3) {
-        gint x, y;
+//        gint x, y;
         GtkTreePath *path;
         GtkTreeSelection *selection;
 
-        x = (gint) (event->x);
-        y = (gint) (event->y);
+//        x = (gint) (event->x);
+//        y = (gint) (event->y);
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
-        if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeView), x, y, &path, NULL, NULL, NULL)) {
+//        if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeView), x, y, &path, NULL, NULL, NULL)) {
+//            return FALSE;
+//        }
+
+        GList *list = gtk_tree_selection_get_selected_rows(selection, &treeModel);
+
+        if (list == NULL) {
             return FALSE;
         }
 
-        gtk_tree_selection_unselect_all(selection);
-        gtk_tree_selection_select_path(selection, path);
-
+//        gtk_tree_selection_unselect_all(selection);
+//        gtk_tree_selection_select_path(selection, path);
+        path = list->data;
         GtkTreeIter iter;
 
         gtk_tree_model_get_iter(treeModel, &iter, path);
