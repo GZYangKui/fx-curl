@@ -7,16 +7,12 @@
 
 #include <gtk/gtk.h>
 
-typedef struct {
-
-} ThreadPoolExecutor;
-
 /**
  *
  * 初始化数据库连接
  *
  */
-extern gboolean fx_init_sqlite();
+extern gpointer fx_init_sqlite(gpointer userData);
 
 /**
  *

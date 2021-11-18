@@ -1,11 +1,17 @@
 #include <stdio.h>
 
 #include <gtk/gtk.h>
+#include "include/common.h"
 #include "include/fx_curl.h"
+#include "include/database.h"
 #include "include/fx_resources.h"
 
 #define WINDOW_WIDTH 700
 #define WINDOW_HEIGHT 450
+
+FXWindowContext *splashWinContext;
+
+static gboolean check_async_que(gpointer userData);
 
 /**
  * 应用logo列表
@@ -45,17 +51,16 @@ static void activate(GtkApplication *app, gpointer user_data) {
     GtkBuilder *builder;
     GtkCssProvider *cssProvider;
 
-
     cssProvider = gtk_css_provider_new();
     window = gtk_application_window_new(app);
     builder = gtk_builder_new_from_resource(GET_INNER_UI_RESOURCE(SplashView.ui));
-    gtk_css_provider_load_from_resource(cssProvider,GET_INNER_CSS_RESOURCE(SplashStyle.css));
+    gtk_css_provider_load_from_resource(cssProvider, GET_INNER_CSS_RESOURCE(SplashStyle.css));
 
     mainBox = GTK_WIDGET(gtk_builder_get_object(builder, "mainBox"));
 
-    GtkStyleContext  *styleContext = gtk_widget_get_style_context(mainBox);
+    GtkStyleContext *styleContext = gtk_widget_get_style_context(mainBox);
 
-    gtk_style_context_add_provider(styleContext, GTK_STYLE_PROVIDER(cssProvider),1);
+    gtk_style_context_add_provider(styleContext, GTK_STYLE_PROVIDER(cssProvider), 1);
 
     gtk_container_add(GTK_CONTAINER(window), mainBox);
 
@@ -66,14 +71,24 @@ static void activate(GtkApplication *app, gpointer user_data) {
 
     gtk_widget_show_all(window);
 
+    splashWinContext = (FXWindowContext *) malloc(sizeof(FXWindowContext));
+    splashWinContext->window = window;
+    splashWinContext->asyncQueue = g_async_queue_new();
+
+    //检查队列
+    g_idle_add(check_async_que, NULL);
 
     //初始化数据库
-    fx_init_sqlite();
-
+    g_thread_new("check-database-thread", fx_init_sqlite, NULL);
 }
 
-void threadPoolTask(gpointer data, gpointer userData) {
-    printf("测试\n");
+static gboolean check_async_que(gpointer userData) {
+    gpointer *data = g_async_queue_try_pop(splashWinContext->asyncQueue);
+    if (data != NULL) {
+        QueueMessage *msg = (QueueMessage*) data;
+        printf("%s\n",msg->message);
+    }
+    return data == NULL;
 }
 
 int main(int argc, char **argv) {
@@ -87,3 +102,5 @@ int main(int argc, char **argv) {
     g_application_run(G_APPLICATION(app), argc, argv);
     fx_shutdown_sqlite3();
 }
+
+

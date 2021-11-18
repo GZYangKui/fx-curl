@@ -3,24 +3,29 @@
 //
 
 #include <stdio.h>
+#include "include/common.h"
 #include "include/sqlite3.h"
 #include "include/database.h"
 
 static sqlite3 *context;
 
-static gpointer check_db_struct(gpointer *userData);
+static gboolean check_db_struct(gpointer *userData);
 
+extern FXWindowContext *splashWinContext;
 
-extern gboolean fx_init_sqlite() {
-    int rs = sqlite3_open("./data/fxcurl.db", &context);
+extern gpointer fx_init_sqlite(gpointer userData) {
+    gint rs = sqlite3_open("./data/fxcurl.db", &context);
     gboolean ok = (rs == SQLITE_OK);
     if (!ok) {
         printf("sqlite open failed=%d\n", rs);
     } else {
-        //开辟新线程检查数据库是否完整
-        g_thread_new("check-db_struct-thread", check_db_struct, NULL);
+        ok = check_db_struct(userData);
     }
-    return ok;
+    QueueMessage *msg = ALLOC_QUEUE_MSG;
+    msg->code = QUEUE_MSG_OK;
+    msg->message = "初始化成功";
+
+    g_async_queue_push(splashWinContext->asyncQueue,msg);
 }
 
 extern void fx_shutdown_sqlite3() {
@@ -42,8 +47,9 @@ extern void fx_shutdown_sqlite3() {
 /**
  * 检查数据库表结构
  */
-static gpointer check_db_struct(gpointer *data) {
+static gboolean check_db_struct(gpointer *data) {
 
+    return TRUE;
 }
 
 

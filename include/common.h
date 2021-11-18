@@ -5,6 +5,9 @@
 #ifndef FXCURL_COMMON_H
 #define FXCURL_COMMON_H
 
+#include <gtk/gtk.h>
+#include <stdlib.h>
+
 #define FX_RESOURCE_PREFIX "/cn/navclub/"
 #define FX_RESOURCE_UI_PREFIX "/cn/navclub/ui/"
 #define FX_RESOURCE_IMG_PREFIX "/cn/navclub/img/"
@@ -24,5 +27,37 @@
 
 #define GET_INNER_CSS_RESOURCE(resource) \
      FX_RESOURCE_CSS_PREFIX#resource
+
+typedef struct {
+    GtkWidget *window;
+    GAsyncQueue *asyncQueue;
+} FXWindowContext;
+
+//队列消息成功状态
+#define QUEUE_MSG_OK 0
+//队列消息失败
+#define QUEUE_MSG_FAIL 1
+
+/**
+ *
+ * 异步消息队列实体结构
+ *
+ */
+typedef struct {
+    /**
+     * 状态码
+     */
+    gint code;
+    /**
+     * 消息
+     */
+    gchararray message;
+    /**
+     * 队列数据
+     */
+    gpointer data;
+} QueueMessage;
+
+#define ALLOC_QUEUE_MSG (QueueMessage*) malloc(sizeof(QueueMessage))
 
 #endif //FXCURL_COMMON_H

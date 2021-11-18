@@ -3,6 +3,9 @@
 //
 
 #include "./include/fx_curl.h"
+#include "./include/database.h"
+#include "./include/nav_tree_event.h"
+#include "./include/nav_notebook_event.h"
 
 #define WINDOW_WIDTH 1300
 #define WINDOW_HEIGHT 800
