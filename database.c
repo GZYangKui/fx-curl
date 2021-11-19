@@ -21,11 +21,14 @@ extern gpointer fx_init_sqlite(gpointer userData) {
     } else {
         ok = check_db_struct(userData);
     }
-    QueueMessage *msg = ALLOC_QUEUE_MSG;
-    msg->code = QUEUE_MSG_OK;
-    msg->message = "初始化成功";
+    QueuePayload *msg = ALLOC_QUEUE_PAYLOAD
+    gchararray str = ok?"初始化成功":"初始化失败";
+    TRA_DUMP_STR(str);
 
-    g_async_queue_push(splashWinContext->asyncQueue,msg);
+    msg->code = ok;
+    msg->message = message;
+
+    g_async_queue_push(splashWinContext->asyncQueue, msg);
 }
 
 extern void fx_shutdown_sqlite3() {

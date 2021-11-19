@@ -85,10 +85,10 @@ static void activate(GtkApplication *app, gpointer user_data) {
 static gboolean check_async_que(gpointer userData) {
     gpointer *data = g_async_queue_try_pop(splashWinContext->asyncQueue);
     if (data != NULL) {
-        QueueMessage *msg = (QueueMessage*) data;
-        printf("%s\n",msg->message);
+        QueuePayload *msg = (QueuePayload*) data;
+       printf("%s\n",msg->message);
     }
-    return data == NULL;
+    return data != NULL;
 }
 
 int main(int argc, char **argv) {
