@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 #include <gtk/gtk.h>
+#include "include/ui_util.h"
 #include "include/common.h"
-#include "include/fx_curl.h"
 #include "include/database.h"
 #include "include/fx_resources.h"
 
@@ -49,18 +49,14 @@ static void activate(GtkApplication *app, gpointer user_data) {
     GtkWidget *window;
     GtkWidget *mainBox;
     GtkBuilder *builder;
-    GtkCssProvider *cssProvider;
 
-    cssProvider = gtk_css_provider_new();
     window = gtk_application_window_new(app);
     builder = gtk_builder_new_from_resource(GET_INNER_UI_RESOURCE(SplashView.ui));
-    gtk_css_provider_load_from_resource(cssProvider, GET_INNER_CSS_RESOURCE(SplashStyle.css));
 
     mainBox = GTK_WIDGET(gtk_builder_get_object(builder, "mainBox"));
 
-    GtkStyleContext *styleContext = gtk_widget_get_style_context(mainBox);
 
-    gtk_style_context_add_provider(styleContext, GTK_STYLE_PROVIDER(cssProvider), 1);
+    add_style_sheet_to_widget(mainBox, GET_INNER_CSS_RESOURCE(SplashStyle.css),1);
 
     gtk_container_add(GTK_CONTAINER(window), mainBox);
 
@@ -85,8 +81,9 @@ static void activate(GtkApplication *app, gpointer user_data) {
 static gboolean check_async_que(gpointer userData) {
     gpointer *data = g_async_queue_try_pop(splashWinContext->asyncQueue);
     if (data != NULL) {
-        QueuePayload *msg = (QueuePayload*) data;
-       printf("%s\n",msg->message);
+        QueuePayload *msg = (QueuePayload *) data;
+        printf("%s\n", msg->message);
+        show_error_dialog("测试","测试");
     }
     return data != NULL;
 }

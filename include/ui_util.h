@@ -7,6 +7,7 @@
 
 #include <gtk/gtk.h>
 
+
 /**
  *
  *
@@ -18,5 +19,19 @@
  *
  */
 extern guint64 open_input_dialog(const gchar *title,GtkWindow *parent,guint maxLen,gchar *buff);
+
+/**
+ *
+ * 显示一个错误对话框
+ *
+ */
+extern void show_error_dialog(gchararray title,gchararray context);
+
+/**
+ *
+ * 添加指定css样式脚本到指定widget上
+ *
+ */
+extern void add_style_sheet_to_widget(GtkWidget *target,gchararray stylesheets,gint prior);
 
 #endif //FXCURL_UI_UTIL_H

@@ -2,8 +2,17 @@
 // Created by yangkui on 2021/11/17.
 //
 #include <string.h>
+#include "include/common.h"
 #include "include/ui_util.h"
 
+extern void add_style_sheet_to_widget(GtkWidget *target, gchararray stylesheets, gint prior) {
+    GtkCssProvider *cssProvider;
+    GtkStyleContext *styleContext;
+    cssProvider = gtk_css_provider_new();
+    styleContext = gtk_widget_get_style_context(target);
+    gtk_css_provider_load_from_resource(cssProvider, stylesheets);
+    gtk_style_context_add_provider(styleContext, GTK_STYLE_PROVIDER(cssProvider), prior);
+}
 
 extern guint64 open_input_dialog(const gchar *title, GtkWindow *parent, guint maxLen, gchar *buff) {
     GtkWidget *entry;
@@ -42,10 +51,40 @@ extern guint64 open_input_dialog(const gchar *title, GtkWindow *parent, guint ma
     if (rs == GTK_RESPONSE_ACCEPT) {
         const gchar *str = gtk_entry_get_text(GTK_ENTRY(entry));
         guint64 strLen = strlen(str);
-        len = (strLen >= maxLen-1 ? maxLen : strLen);
-        strncpy(buff, str, len+1);
+        len = (strLen >= maxLen - 1 ? maxLen : strLen);
+        strncpy(buff, str, len + 1);
     }
     //销毁对话框
     gtk_widget_destroy(dialog);
     return len;
+}
+
+extern void show_error_dialog(gchararray title, gchararray context) {
+    GdkPixbuf *pixBuf;
+    GtkWidget *errIcon;
+    GtkBuilder *builder;
+    GtkWidget *errDialog;
+    GtkWidget *errHeaderText;
+    GtkWidget *errContentText;
+
+    gchararray path = GET_INNER_UI_RESOURCE(widget/ErrorDialog.ui);
+    builder = gtk_builder_new_from_resource(path);
+
+    errIcon = GTK_WIDGET(gtk_builder_get_object(builder, "errIcon"));
+    errDialog = GTK_WIDGET(gtk_builder_get_object(builder, "errDialog"));
+    errHeaderText = GTK_WIDGET(gtk_builder_get_object(builder, "errHeaderText"));
+    errContentText = GTK_WIDGET(gtk_builder_get_object(builder,"errContentText"));
+
+    pixBuf = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(error.svg), NULL);
+
+    gtk_label_set_text(GTK_LABEL(errHeaderText), title);
+    gtk_image_set_from_pixbuf(GTK_IMAGE(errIcon), pixBuf);
+    gtk_label_set_text(GTK_LABEL(errContentText),context);
+    gtk_window_set_title(GTK_WINDOW(errDialog), "错误");
+
+    add_style_sheet_to_widget(errDialog, GET_INNER_CSS_RESOURCE(ErrDialogStyle.css),1);
+
+    gtk_dialog_run(GTK_DIALOG(errDialog));
+
+    gtk_widget_destroy(errDialog);
 }
