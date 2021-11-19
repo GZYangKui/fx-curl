@@ -39,12 +39,20 @@ typedef struct {
 //队列消息失败
 #define QUEUE_MSG_FAIL 0
 
+typedef enum {
+    //检查数据库配置
+    CHECK_DB_CONFIG
+} QueMsgType;
 /**
  *
  * 异步消息队列实体结构
  *
  */
 typedef struct {
+    /**
+     * 消息类型
+     */
+    QueMsgType type;
     /**
      * 状态码
      */

@@ -11,7 +11,13 @@
 
 FXWindowContext *splashWinContext;
 
+static gint checkTaskNum = 1;
+static gint alreadyCheckTask = 0;
+
+static void apply_global_style();
+
 static gboolean check_async_que(gpointer userData);
+
 
 /**
  * 应用logo列表
@@ -56,7 +62,7 @@ static void activate(GtkApplication *app, gpointer user_data) {
     mainBox = GTK_WIDGET(gtk_builder_get_object(builder, "mainBox"));
 
 
-    add_style_sheet_to_widget(mainBox, GET_INNER_CSS_RESOURCE(SplashStyle.css),1);
+    add_style_sheet_to_widget(mainBox, GET_INNER_CSS_RESOURCE(SplashStyle.css), 1);
 
     gtk_container_add(GTK_CONTAINER(window), mainBox);
 
@@ -71,6 +77,8 @@ static void activate(GtkApplication *app, gpointer user_data) {
     splashWinContext->window = window;
     splashWinContext->asyncQueue = g_async_queue_new();
 
+    apply_global_style();
+
     //检查队列
     g_idle_add(check_async_que, NULL);
 
@@ -79,13 +87,31 @@ static void activate(GtkApplication *app, gpointer user_data) {
 }
 
 static gboolean check_async_que(gpointer userData) {
+    gchararray errMsg;
+    gboolean success = TRUE;
     gpointer *data = g_async_queue_try_pop(splashWinContext->asyncQueue);
     if (data != NULL) {
         QueuePayload *msg = (QueuePayload *) data;
-        printf("%s\n", msg->message);
-        show_error_dialog("测试","测试");
+        success = (msg->code == QUEUE_MSG_OK);
+        if (!success) {
+            errMsg = msg->message;
+        }
+        alreadyCheckTask++;
     }
-    return data != NULL;
+    if (!success){
+        show_error_dialog("程序初始化失败!",errMsg);
+    }
+    return alreadyCheckTask < checkTaskNum;
+}
+
+void apply_global_style() {
+    GdkScreen *screen;
+    GtkCssProvider *cssProvider;
+    screen = gdk_screen_get_default();
+    cssProvider = gtk_css_provider_new();
+    gtk_css_provider_load_from_resource(cssProvider, GET_INNER_CSS_RESOURCE(GlobalStyle.css));
+    gtk_style_context_add_provider_for_screen(screen, GTK_STYLE_PROVIDER(cssProvider),
+                                              GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
 int main(int argc, char **argv) {

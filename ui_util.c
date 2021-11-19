@@ -59,7 +59,7 @@ extern guint64 open_input_dialog(const gchar *title, GtkWindow *parent, guint ma
     return len;
 }
 
-extern void show_error_dialog(gchararray title, gchararray context) {
+extern void show_error_dialog(gchararray title, gchararray content) {
     GdkPixbuf *pixBuf;
     GtkWidget *errIcon;
     GtkBuilder *builder;
@@ -79,10 +79,11 @@ extern void show_error_dialog(gchararray title, gchararray context) {
 
     gtk_label_set_text(GTK_LABEL(errHeaderText), title);
     gtk_image_set_from_pixbuf(GTK_IMAGE(errIcon), pixBuf);
-    gtk_label_set_text(GTK_LABEL(errContentText),context);
+    gtk_label_set_text(GTK_LABEL(errContentText),content);
     gtk_window_set_title(GTK_WINDOW(errDialog), "错误");
 
-    add_style_sheet_to_widget(errDialog, GET_INNER_CSS_RESOURCE(ErrDialogStyle.css),1);
+    add_style_sheet_to_widget(gtk_dialog_get_content_area(errDialog), GET_INNER_CSS_RESOURCE(ErrDialogStyle.css),GTK_STYLE_PROVIDER_PRIORITY_USER);
+
 
     gtk_dialog_run(GTK_DIALOG(errDialog));
 

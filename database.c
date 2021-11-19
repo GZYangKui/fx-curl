@@ -27,6 +27,7 @@ extern gpointer fx_init_sqlite(gpointer userData) {
 
     msg->code = ok;
     msg->message = message;
+    msg->type = CHECK_DB_CONFIG;
 
     g_async_queue_push(splashWinContext->asyncQueue, msg);
 }

@@ -1,0 +1,12 @@
+/***************************************************
+                 error dialog style                *
+ ***************************************************/
+.err-dialog-header-box {
+    border-style: solid;
+    border-color: #DBDBDB;
+    border-width: 0 0 1px 0;
+}
+
+.err-dialog-header-box, .err-dialog-content-box {
+    padding: 10px;
+}
