@@ -71,30 +71,36 @@
           </packing>
         </child>
         <child>
-          <object class="GtkTreeView" id="navTree">
+          <object class="GtkScrolledWindow" id="scrolledwindow1">
             <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="hadjustment">adjustment1</property>
-            <property name="vadjustment">adjustment1</property>
-            <signal name="button-press-event" handler="fx_nav_tree_click" swapped="no"/>
-            <child internal-child="selection">
-              <object class="GtkTreeSelection"/>
-            </child>
+            <property name="can-focus">False</property>
             <child>
-              <object class="GtkTreeViewColumn" id="iconTreeCol">
-                <property name="title" translatable="yes">图标</property>
-                <property name="clickable">True</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="navTreeCol">
-                <property name="title" translatable="yes">名称</property>
-                <property name="clickable">True</property>
+              <object class="GtkTreeView" id="navTree">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="hadjustment">adjustment1</property>
+                <property name="vadjustment">adjustment1</property>
+                <signal name="button-press-event" handler="fx_nav_tree_click" swapped="no"/>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection"/>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn" id="iconTreeCol">
+                    <property name="title" translatable="yes">图标</property>
+                    <property name="clickable">True</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkTreeViewColumn" id="navTreeCol">
+                    <property name="title" translatable="yes">名称</property>
+                    <property name="clickable">True</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
+            <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
