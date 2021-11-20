@@ -97,12 +97,12 @@ static gboolean check_async_que(gpointer userData) {
             errMsg = msg->message;
         }
         alreadyCheckTask++;
+        FREE_QUEUE_PAYLOAD(msg,TRUE)
     }
     if (!success) {
         show_error_dialog("程序初始化失败!", errMsg);
         g_application_quit(G_APPLICATION(app));
     }
-    FREE_QUEUE_PAYLOAD(msg,TRUE)
     return alreadyCheckTask < checkTaskNum;
 }
 

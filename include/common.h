@@ -95,7 +95,7 @@ if((ptr)!=NULL){                          \
    if((ptr)->message!=NULL){              \
        FX_FREE((ptr)->message);           \
    }                                      \
-   if((ptr)->data!=NULL && freeData){     \
+   if((ptr)->data!=NULL && (freeData)){     \
      FX_FREE((ptr)->data)                 \
    }                                      \
    FX_FREE(ptr)                           \
