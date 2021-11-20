@@ -11,6 +11,7 @@
 
 FXWindowContext *splashWinContext;
 
+static GtkApplication *app;
 static gint checkTaskNum = 1;
 static gint alreadyCheckTask = 0;
 
@@ -98,8 +99,9 @@ static gboolean check_async_que(gpointer userData) {
         }
         alreadyCheckTask++;
     }
-    if (!success){
-        show_error_dialog("程序初始化失败!",errMsg);
+    if (!success) {
+        show_error_dialog("程序初始化失败!", errMsg);
+        g_application_quit(G_APPLICATION(app));
     }
     return alreadyCheckTask < checkTaskNum;
 }
@@ -115,8 +117,6 @@ void apply_global_style() {
 }
 
 int main(int argc, char **argv) {
-    GtkApplication *app;
-
 
     app = gtk_application_new("cn.navclub", G_APPLICATION_FLAGS_NONE);
 
