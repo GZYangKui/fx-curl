@@ -3,6 +3,7 @@
 #include <gtk/gtk.h>
 #include "include/ui_util.h"
 #include "include/common.h"
+#include "include/util.h"
 #include "include/database.h"
 #include "include/fx_resources.h"
 
@@ -88,16 +89,17 @@ static void activate(GtkApplication *app, gpointer user_data) {
 }
 
 static gboolean check_async_que(gpointer userData) {
-    gchararray errMsg;
     gboolean success = TRUE;
-    QueuePayload *msg =(QueuePayload *) g_async_queue_try_pop(splashWinContext->asyncQueue);
+    gchararray errMsg;
+    QueuePayload *msg = (QueuePayload *) g_async_queue_try_pop(splashWinContext->asyncQueue);
     if (msg != NULL) {
         success = (msg->code == QUEUE_MSG_OK);
         if (!success) {
-            errMsg = msg->message;
+            SIMPLE_CPY_STR(msg->message)
+            errMsg = desStr;
         }
         alreadyCheckTask++;
-        FREE_QUEUE_PAYLOAD(msg,TRUE)
+        FREE_QUEUE_PAYLOAD(msg, TRUE)
     }
     if (!success) {
         show_error_dialog("程序初始化失败!", errMsg);
