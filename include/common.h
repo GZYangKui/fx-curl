@@ -8,6 +8,7 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
+#include "fx_config.h"
 
 #define FX_RESOURCE_PREFIX "/cn/navclub/"
 #define FX_RESOURCE_UI_PREFIX "/cn/navclub/ui/"

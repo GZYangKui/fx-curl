@@ -14,7 +14,13 @@ static gboolean check_db_struct(gpointer *userData);
 extern FXWindowContext *splashWinContext;
 
 extern gpointer fx_init_sqlite(gpointer userData) {
-    gint rs = sqlite3_open("./data/fxcurl.db", &context);
+    gchararray sqlitePath;
+    if (PROJECT_PROFILE == DEV_PROFILE) {
+        sqlitePath = "../data/fxcurl.db";
+    } else {
+        sqlitePath = "./data/fxcurl.db";
+    }
+    gint rs = sqlite3_open(sqlitePath, &context);
     gboolean ok = (rs == SQLITE_OK);
     if (!ok) {
         printf("sqlite open failed=%d\n", rs);
@@ -22,7 +28,7 @@ extern gpointer fx_init_sqlite(gpointer userData) {
         ok = check_db_struct(userData);
     }
     QueuePayload *msg = ALLOC_QUEUE_PAYLOAD
-    gchararray str = ok?"初始化成功":"初始化失败";
+    gchararray str = ok ? "初始化成功" : "初始化失败";
     TRA_DUMP_STR(str);
 
     msg->code = ok;

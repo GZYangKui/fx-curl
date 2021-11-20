@@ -1,0 +1,6 @@
+//开发环境
+#define DEV_PROFILE 0
+//生产环境
+#define PROD_PROFILE 1
+//项目当前所处环境
+#define PROJECT_PROFILE DEV_PROFILE

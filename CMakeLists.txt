@@ -7,6 +7,8 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_FLAGS "-rdynamic")
 set(CMAKE_CXX_FLAGS "-rdynamic")
 
+configure_file(fx_config.bin fx_config.h)
+
 
 find_package(PkgConfig REQUIRED)
 
@@ -19,6 +21,7 @@ link_directories(lib/linux)
 
 
 add_executable(fxcurl ${SOURCE_DIR})
+include_directories("${PROJECT_BINARY_DIR}")
 include_directories(${GTK3_INCLUDE_DIRS})
 target_link_libraries(fxcurl ${GTK3_LIBRARIES})
 target_link_libraries(fxcurl sqlite3)
