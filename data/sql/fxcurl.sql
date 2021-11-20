@@ -1,31 +1,11 @@
-/*
-  节点数表
- */
-CREATE TABLE IF NOT EXISTS inter_tree
+CREATE TABLE IF NOT EXISTS  node_tree
 (
-    --节点自增id
-    id
-    int
-    NOT
-    NULL,
-    --父级节点id,没有父级节点则该记录为0
-    int
-    parent_id
-    NOT
-    NULL,
-    --当前节点类型 0->文件夹 1->接口
-    smallint
-    type
-    NOT
-    NULL,
-    --当前节点名称
-    varchar
-    name
-    NOT
-    NULL,
-    --当前节点创建时间
-    timestamp
-    create_time
-    NOT
-    NULL
+    id          integer            not null
+        constraint node_tree_pk
+            primary key autoincrement,
+    type        smallint default 0 not null,
+    parent_id   integer  default 0 not null,
+    name        text               not null,
+    create_time timestamp          not null
 );
+

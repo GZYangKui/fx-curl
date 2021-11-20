@@ -7,6 +7,15 @@
 
 #include <gtk/gtk.h>
 
+typedef struct {
+    gint id;
+    gint16 type;
+    gint parentId;
+    gchararray name;
+    gchararray createTime;
+} NodeTree;
+
+
 /**
  *
  * 初始化数据库连接

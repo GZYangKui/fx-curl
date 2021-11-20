@@ -5,6 +5,7 @@
 #include "include/common.h"
 #include "include/util.h"
 #include "include/database.h"
+#include "include/fx_curl.h"
 #include "include/fx_resources.h"
 
 #define WINDOW_WIDTH 700
@@ -15,6 +16,7 @@ FXWindowContext *splashWinContext;
 static GtkApplication *app;
 static gint checkTaskNum = 1;
 static gint alreadyCheckTask = 0;
+static GtkWidget *progressBar;
 
 static void apply_global_style();
 
@@ -62,7 +64,7 @@ static void activate(GtkApplication *app, gpointer user_data) {
     builder = gtk_builder_new_from_resource(GET_INNER_UI_RESOURCE(SplashView.ui));
 
     mainBox = GTK_WIDGET(gtk_builder_get_object(builder, "mainBox"));
-
+    progressBar = GTK_WIDGET(gtk_builder_get_object(builder, "progressBar"));
 
     add_style_sheet_to_widget(mainBox, GET_INNER_CSS_RESOURCE(SplashStyle.css), 1);
 
@@ -89,23 +91,35 @@ static void activate(GtkApplication *app, gpointer user_data) {
 }
 
 static gboolean check_async_que(gpointer userData) {
-    gboolean success = TRUE;
-    gchararray errMsg;
     QueuePayload *msg = (QueuePayload *) g_async_queue_try_pop(splashWinContext->asyncQueue);
-    if (msg != NULL) {
-        success = (msg->code == QUEUE_MSG_OK);
-        if (!success) {
-            SIMPLE_CPY_STR(msg->message)
-            errMsg = desStr;
-        }
-        alreadyCheckTask++;
-        FREE_QUEUE_PAYLOAD(msg, TRUE)
+    if (msg == NULL) {
+        return TRUE;
     }
+    gchararray errMsg;
+    gboolean success = TRUE;
+    success = (msg->code == QUEUE_MSG_OK);
+    if (!success) {
+        SIMPLE_CPY_STR(msg->message)
+        errMsg = desStr;
+    }
+    alreadyCheckTask++;
+    FREE_QUEUE_PAYLOAD(msg, TRUE)
     if (!success) {
         show_error_dialog("程序初始化失败!", errMsg);
         g_application_quit(G_APPLICATION(app));
     }
-    return alreadyCheckTask < checkTaskNum;
+    gboolean finish = alreadyCheckTask <= checkTaskNum;
+    if (!finish) {
+        //计算进度
+        gdouble fraction = alreadyCheckTask / (checkTaskNum * 1.0);
+        //更新进度条值
+        gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(progressBar), fraction);
+    } else {
+        open_fx_curl();
+        gtk_widget_hide(splashWinContext->window);
+    }
+    return !finish;
+
 }
 
 void apply_global_style() {
@@ -114,8 +128,7 @@ void apply_global_style() {
     screen = gdk_screen_get_default();
     cssProvider = gtk_css_provider_new();
     gtk_css_provider_load_from_resource(cssProvider, GET_INNER_CSS_RESOURCE(GlobalStyle.css));
-    gtk_style_context_add_provider_for_screen(screen, GTK_STYLE_PROVIDER(cssProvider),
-                                              GTK_STYLE_PROVIDER_PRIORITY_USER);
+    gtk_style_context_add_provider_for_screen(screen, GTK_STYLE_PROVIDER(cssProvider),GTK_STYLE_PROVIDER_PRIORITY_USER);
 }
 
 int main(int argc, char **argv) {

@@ -11,8 +11,9 @@
 #define WINDOW_HEIGHT 800
 #define WINDOW_TITLE "FxCurl"
 
+static void window_destroy(GtkWidget *object, gpointer user_data);
 
-extern void open_fx_curl(){
+extern void open_fx_curl() {
     GtkWidget *window;
     GtkBuilder *builder;
 
@@ -31,4 +32,14 @@ extern void open_fx_curl(){
 
     fx_init_nav_tree(builder);
     fx_inti_nav_notebook(builder);
+
+    g_signal_connect(window, "destroy", window_destroy, NULL);
+
+    gtk_widget_show_all(window);
+}
+
+static void window_destroy(GtkWidget *object, gpointer user_data) {
+    extern FXWindowContext *splashWinContext;
+    //退出当前程序
+    gtk_widget_destroy(splashWinContext->window);
 }

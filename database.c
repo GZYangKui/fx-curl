@@ -80,6 +80,8 @@ static gboolean check_db_struct() {
                 success = FALSE;
                 printf("数据库初始化失败:%s,错误sql语句:%s\n",errMsg,sql);
                 break;
+            } else{
+                printf("sql语句执行成功\n");
             }
         }
     }
