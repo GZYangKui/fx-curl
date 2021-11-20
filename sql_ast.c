@@ -15,11 +15,11 @@ typedef enum {
     MULTI_LINE
 } AstCommentType;
 
-static gint isRowSymbol(gchar, gchar);
+static gint is_row_symbol(gchar, gchar);
 
 static AstCommentType is_comment_line(gchar, gchar);
 
-static gint nextRowSymbol(const gchar *, gsize, gint, AstCommentType);
+static gint get_comment_end(const gchar *, gsize, gint, AstCommentType);
 
 
 gboolean get_init_sql_state(GList *list) {
@@ -48,7 +48,7 @@ gboolean get_init_sql_state(GList *list) {
         gchar a = *(str + i);
         gchar b = *(str + i + 1);
         //判断当前字符是否换行符号
-        gint k = isRowSymbol(a, b);
+        gint k = is_row_symbol(a, b);
         if (k >= 1) {
             i += (k - 1);
             continue;
@@ -56,16 +56,16 @@ gboolean get_init_sql_state(GList *list) {
         AstCommentType type = is_comment_line(a, b);
         //单行或者多行注释
         if (type != NONE) {
-            gint index = nextRowSymbol(str, size, i + 2, type);
+            gint index = get_comment_end(str, size, i + 2, type);
             if (index == END_FILE_EXCEPTION) {
                 return FALSE;
             }
             i = index;
             continue;
         }
-        if ( (buff == NULL) || (count == DEFAULT_AST_SIZE - 2)) {
+        if ((buff == NULL) || (count == DEFAULT_AST_SIZE - 2)) {
             if (buff == NULL) {
-                buff = (gchararray)malloc(DEFAULT_AST_SIZE*sizeof (gchar));
+                buff = (gchararray) malloc(DEFAULT_AST_SIZE * sizeof(gchar));
                 memset(buff, 0, DEFAULT_AST_SIZE);
             } else {
                 gint extra = (gint) (count * DEFAULT_LOAD_FACTOR);
@@ -76,9 +76,9 @@ gboolean get_init_sql_state(GList *list) {
         *(buff + count) = a;
         if (b == STATEMENT_END_SYMBOL) {
             *(buff + count + 1) = b;
-            if (list->data == NULL){
+            if (list->data == NULL) {
                 list->data = buff;
-            }else {
+            } else {
                 list = g_list_append(list, buff);
             }
             count = 0;
@@ -88,6 +88,7 @@ gboolean get_init_sql_state(GList *list) {
             count++;
         }
     }
+    g_bytes_unref(bytes);
     g_object_unref(file);
     return TRUE;
 }
@@ -102,7 +103,7 @@ static AstCommentType is_comment_line(gchar a, gchar b) {
     return NONE;
 }
 
-static gint isRowSymbol(gchar a, gchar b) {
+static gint is_row_symbol(gchar a, gchar b) {
     gboolean c = (a == '\n');
     gboolean d = ((b == '\r') && c);
     if (!c && !d) {
@@ -116,7 +117,7 @@ static gint isRowSymbol(gchar a, gchar b) {
  * 查找下一个行号位置
  *
  */
-static gint nextRowSymbol(const gchar *const bytes, gsize size, gint start, AstCommentType type) {
+static gint get_comment_end(const gchar *const bytes, gsize size, gint start, AstCommentType type) {
     gchar a;
     gchar b;
     gint pos = start;
@@ -125,7 +126,7 @@ static gint nextRowSymbol(const gchar *const bytes, gsize size, gint start, AstC
         a = *(bytes + pos);
         b = *(bytes + pos + 1);
         if (type == SINGLE_LINE) {
-            gint k = isRowSymbol(a, b);
+            gint k = is_row_symbol(a, b);
             if (k >= 1) {
                 rsIndex = pos + k - 1;
                 break;
