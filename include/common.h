@@ -77,6 +77,7 @@ typedef struct {
  gchararray message = (gchararray)malloc(strlen(str)+1); \
  strcpy(message,str);
 
+
 /**
  * 释放堆内存并置NULL值
  */
@@ -84,5 +85,20 @@ typedef struct {
    free(ptr);        \
    ptr = NULL;
 
+/**
+ *
+ * 使用宏定义释放资源
+ *
+ */
+#define FREE_QUEUE_PAYLOAD(ptr, freeData) \
+if((ptr)!=NULL){                          \
+   if((ptr)->message!=NULL){              \
+       FX_FREE((ptr)->message);           \
+   }                                      \
+   if((ptr)->data!=NULL && freeData){     \
+     FX_FREE((ptr)->data)                 \
+   }                                      \
+   FX_FREE(ptr)                           \
+}
 
 #endif //FXCURL_COMMON_H

@@ -90,9 +90,8 @@ static void activate(GtkApplication *app, gpointer user_data) {
 static gboolean check_async_que(gpointer userData) {
     gchararray errMsg;
     gboolean success = TRUE;
-    gpointer *data = g_async_queue_try_pop(splashWinContext->asyncQueue);
-    if (data != NULL) {
-        QueuePayload *msg = (QueuePayload *) data;
+    QueuePayload *msg =(QueuePayload *) g_async_queue_try_pop(splashWinContext->asyncQueue);
+    if (msg != NULL) {
         success = (msg->code == QUEUE_MSG_OK);
         if (!success) {
             errMsg = msg->message;
@@ -103,6 +102,7 @@ static gboolean check_async_que(gpointer userData) {
         show_error_dialog("程序初始化失败!", errMsg);
         g_application_quit(G_APPLICATION(app));
     }
+    FREE_QUEUE_PAYLOAD(msg,TRUE)
     return alreadyCheckTask < checkTaskNum;
 }
 
