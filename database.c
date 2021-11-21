@@ -29,8 +29,69 @@ extern gboolean fx_init_sqlite(gpointer userData, GError **error) {
         ok = check_db_struct();
     }
     if (!ok) {
-        *error = g_error_new(0,FALSE,"数据库初始化失败!");
+        *error = g_error_new(0, FALSE, "数据库初始化失败!");
     }
+    return ok;
+}
+
+extern gboolean select_node_by_parent_id(gint id, GList *list) {
+    sqlite3_stmt *preStmt = NULL;
+    gchararray sql = "SELECT * FROM node_tree WHERE parent_id=?";
+    sqlite3_prepare_v3(context, sql, (gint) strlen(sql), SQLITE_PREPARE_PERSISTENT, &preStmt, NULL);
+    sqlite3_bind_int(preStmt, 1, id);
+
+    gint count = 0;
+    while (sqlite3_step(preStmt) == SQLITE_ROW) {
+        NodeTree *nodeTree = g_malloc(sizeof(NodeTree));
+        nodeTree->id = sqlite3_column_int(preStmt, 0);
+        nodeTree->type = sqlite3_column_int(preStmt, 1);
+        nodeTree->parentId = sqlite3_column_int(preStmt, 2);
+
+        gchararray name = sqlite3_column_text(preStmt, 3);
+
+        if (name != NULL) {
+            TRA_DUMP_STR(name)
+            nodeTree->name = message;
+        } else {
+            nodeTree->name = NULL;
+        }
+
+        if (count == 0) {
+            list->data = nodeTree;
+        } else {
+            list = g_list_append(list, nodeTree);
+        }
+        count++;
+    }
+
+    sqlite3_finalize(preStmt);
+}
+
+extern gboolean insert_tree_node(gint *id, gint parentId, gint type, gchararray name) {
+    sqlite3_stmt *preStmt = NULL;
+    gchararray sql = "INSERT INTO node_tree(type,parent_id,name,create_time) VALUES(?,?,?,?)";
+    sqlite3_prepare_v3(
+            context,
+            sql,
+            (gint) strlen(sql),
+            SQLITE_PREPARE_PERSISTENT,
+            &preStmt,
+            NULL
+    );
+
+    sqlite3_bind_int(preStmt, 1, type);
+    sqlite3_bind_int(preStmt, 2, parentId);
+    sqlite3_bind_text(preStmt, 3, name, -1, SQLITE_STATIC);
+    sqlite3_bind_int64(preStmt, 4, fx_get_timestamp());
+
+    //执行sql语句
+    gint code = sqlite3_step(preStmt);
+    gboolean ok = (code == SQLITE_DONE);
+    if (!ok) {
+        *id = code;
+    }
+    sqlite3_finalize(preStmt);
+
     return ok;
 }
 

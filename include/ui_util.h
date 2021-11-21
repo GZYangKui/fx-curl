@@ -27,6 +27,27 @@ typedef struct {
     FX_FREE(request);                   \
 
 
+#define FX_RESOURCE_PREFIX "/cn/navclub/"
+#define FX_RESOURCE_UI_PREFIX "/cn/navclub/ui/"
+#define FX_RESOURCE_IMG_PREFIX "/cn/navclub/img/"
+#define FX_RESOURCE_CSS_PREFIX "/cn/navclub/css/"
+
+/**
+ * 通过宏拼接资源前缀
+ */
+#define GET_INNER_RESOURCE_PATH(resource) \
+      FX_RESOURCE_PREFIX#resource
+
+#define GET_INNER_UI_RESOURCE(resource) \
+    FX_RESOURCE_UI_PREFIX#resource
+
+#define GET_INNER_IMG_RESOURCE(resource) \
+     FX_RESOURCE_IMG_PREFIX#resource
+
+#define GET_INNER_CSS_RESOURCE(resource) \
+     FX_RESOURCE_CSS_PREFIX#resource
+
+
 extern UpdateUIRequest *fx_update_ui_request_new(gboolean status, gchararray msg, gpointer data);
 
 extern void set_window_default_icons(GtkWidget *window);

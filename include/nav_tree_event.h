@@ -37,11 +37,14 @@ typedef enum {
      */
     COL_TYPE,
     /**
+     * column id
+     */
+    COL_ID,
+    /**
      * 总列数
      */
     NUM_COLS
 } TreeViewMeta;
-
 /**
  *
  * init nav tree view

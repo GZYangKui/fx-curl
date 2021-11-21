@@ -3,7 +3,6 @@
 //
 #include "./include/ui_util.h"
 #include "./include/fx_curl.h"
-#include "./include/database.h"
 #include "./include/nav_tree_event.h"
 #include "./include/nav_notebook_event.h"
 
@@ -43,7 +42,8 @@ extern void open_fx_curl() {
 }
 
 static void window_destroy(GtkWidget *object, gpointer user_data) {
-    extern void  fx_quit_curl();
+    extern void fx_quit_curl();
 
     fx_quit_curl();
 }
+

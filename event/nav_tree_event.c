@@ -3,6 +3,7 @@
 //
 
 #include "../include/ui_util.h"
+#include "../include/database.h"
 #include "../include/nav_tree_event.h"
 
 GtkWidget *navTree;
@@ -31,8 +32,11 @@ MenuItemMeta itemMetas[] = {
         }
 };
 
+static void fx_init_node_tree();
+
 static void do_create_folder(GtkTreeIter *parent);
 
+static void internal_do_create_folder(GtkTreeIter *parent, gint id, gchararray name);
 
 static void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *event);
 
@@ -54,6 +58,7 @@ extern void fx_init_nav_tree(GtkBuilder *builder) {
     treeModel = GTK_TREE_MODEL(gtk_tree_store_new(NUM_COLS,
                                                   G_TYPE_OBJECT,
                                                   G_TYPE_STRING,
+                                                  G_TYPE_INT,
                                                   G_TYPE_INT)
     );
 
@@ -70,6 +75,7 @@ extern void fx_init_nav_tree(GtkBuilder *builder) {
     gtk_tree_view_set_model(GTK_TREE_VIEW(navTree), treeModel);
     g_object_unref(treeModel);
 
+    fx_init_node_tree();
 
 }
 
@@ -106,26 +112,26 @@ void menu_item_select(GtkMenuItem *item, GdkEvent *event, gpointer *userData) {
 
 extern gboolean fx_nav_tree_click(GtkWidget *treeView, GdkEventButton *event, gpointer *userData) {
     if (event->type == GDK_BUTTON_PRESS && event->button == 3) {
-//        gint x, y;
+        gint x, y;
         GtkTreePath *path;
         GtkTreeSelection *selection;
 
-//        x = (gint) (event->x);
-//        y = (gint) (event->y);
+        x = (gint) (event->x);
+        y = (gint) (event->y);
         selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeView));
-//        if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeView), x, y, &path, NULL, NULL, NULL)) {
-//            return FALSE;
-//        }
-
-        GList *list = gtk_tree_selection_get_selected_rows(selection, &treeModel);
-
-        if (list == NULL) {
+        if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(treeView), x, y, &path, NULL, NULL, NULL)) {
             return FALSE;
         }
 
-//        gtk_tree_selection_unselect_all(selection);
-//        gtk_tree_selection_select_path(selection, path);
-        path = list->data;
+//        GList *list = gtk_tree_selection_get_selected_rows(selection, &treeModel);
+//
+//        if (list == NULL) {
+//            return FALSE;
+//        }
+
+        gtk_tree_selection_unselect_all(selection);
+        gtk_tree_selection_select_path(selection, path);
+//        path = list->data;
         GtkTreeIter iter;
 
         gtk_tree_model_get_iter(treeModel, &iter, path);
@@ -182,14 +188,47 @@ static void do_create_folder(GtkTreeIter *parent) {
     if (len <= 0) {
         return;
     }
+    gint id = 0;
+    gboolean ok = insert_tree_node(&id, 0, 0, buffer);
+    if (ok) {
+        internal_do_create_folder(parent, 0, buffer);
+    } else {
+        gchar errMsg[255];
+        sprintf(errMsg, "插入数据过程发生未知错误(错误码:%d)", id);
+        show_error_dialog("新建文件夹失败!", errMsg);
+    }
+}
 
+static void internal_do_create_folder(GtkTreeIter *parent, gint id, gchararray name) {
+    GtkTreeIter iter;
+    GdkPixbuf *pixBuf;
     pixBuf = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(api_folder.svg), NULL);
-    gtk_tree_store_append(treeStore, &iter, parent);
-    gtk_tree_store_set(treeStore, &iter,
+    gtk_tree_store_append(GTK_TREE_STORE(treeModel), &iter, parent);
+    gtk_tree_store_set(GTK_TREE_STORE(treeModel), &iter,
                        ICON_COLUMN, pixBuf,
-                       TEXT_COLUMN, buffer,
+                       TEXT_COLUMN, name,
+                       COL_ID, id,
                        -1);
     g_object_unref(pixBuf);
+}
+
+/**
+ *
+ * 从数据库初始化列表
+ *
+ */
+static void fx_init_node_tree() {
+    GList *list = g_list_alloc();
+    select_node_by_parent_id(0, list);
+    guint len = g_list_length(list);
+    GList *temp = list;
+    for (int i = 0; i < len; ++i) {
+        NodeTree *treeNode = temp->data;
+        internal_do_create_folder(NULL, treeNode->id, treeNode->name);
+        FX_FREE_TREE_NODE(treeNode,FALSE)
+        temp = temp->next;
+    }
+    g_list_free(list);
 }
 
 

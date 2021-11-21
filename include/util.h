@@ -14,6 +14,13 @@
     gint size = strlen(src)+1;\
     gchar desStr[size];       \
     memset(desStr,0,size);    \
-    strcpy(desStr,src);       \
+    strcpy(desStr,src);
+
+/**
+ * 获取1970到当前时间的秒数
+ */
+extern gint64 fx_get_timestamp();
+
+
 
 #endif //FXCURL_UTIL_H
