@@ -8,8 +8,12 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
-#include "util.h"
 #include "fx_config.h"
+
+/**
+ * 获取1970到当前时间的毫秒数
+ */
+extern gint64 fx_get_timestamp();
 
 /**
  * 将栈上字符串复制到堆上
