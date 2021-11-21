@@ -21,7 +21,7 @@ typedef struct {
  * 初始化数据库连接
  *
  */
-extern gpointer fx_init_sqlite(gpointer userData);
+extern gboolean fx_init_sqlite(gpointer userData, GError **error);
 
 /**
  *

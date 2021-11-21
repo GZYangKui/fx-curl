@@ -8,6 +8,29 @@
 #include <gtk/gtk.h>
 
 
+typedef struct {
+    //状态
+    gboolean status;
+    //消息
+    gchararray message;
+    //待更新数据
+    gpointer data;
+} UpdateUIRequest;
+
+/**
+ * 定义宏释放{@struct UpdateUIRequest},注意该宏不会释放data指针指向的内存,调用者自行释放.
+ */
+#define FREE_UPDATE_UI_REQUEST(request) \
+   if((request)->message!=NULL) {         \
+     FX_FREE((request)->message);       \
+   }                                    \
+    FX_FREE(request);                   \
+
+
+extern UpdateUIRequest *fx_update_ui_request_new(gboolean status, gchararray msg, gpointer data);
+
+extern void set_window_default_icons(GtkWidget *window);
+
 /**
  *
  *
@@ -18,20 +41,20 @@
  * @return 返回真实输入长度
  *
  */
-extern guint64 open_input_dialog(const gchar *title,GtkWindow *parent,guint maxLen,gchar *buff);
+extern guint64 open_input_dialog(const gchar *title, GtkWindow *parent, guint maxLen, gchar *buff);
 
 /**
  *
  * 显示一个错误对话框
  *
  */
-extern void show_error_dialog(gchararray title,gchararray context);
+extern void show_error_dialog(gchararray title, gchararray context);
 
 /**
  *
  * 添加指定css样式脚本到指定widget上
  *
  */
-extern void add_style_sheet_to_widget(GtkWidget *target,gchararray stylesheets,gint prior);
+extern void add_style_sheet_to_widget(GtkWidget *target, gchararray stylesheets, gint prior);
 
 #endif //FXCURL_UI_UTIL_H

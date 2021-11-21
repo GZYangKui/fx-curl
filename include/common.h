@@ -30,46 +30,6 @@
 #define GET_INNER_CSS_RESOURCE(resource) \
      FX_RESOURCE_CSS_PREFIX#resource
 
-typedef struct {
-    GtkWidget *window;
-    GAsyncQueue *asyncQueue;
-} FXWindowContext;
-
-//队列消息成功状态
-#define QUEUE_MSG_OK 1
-//队列消息失败
-#define QUEUE_MSG_FAIL 0
-
-typedef enum {
-    //检查数据库配置
-    CHECK_DB_CONFIG
-} QueMsgType;
-/**
- *
- * 异步消息队列实体结构
- *
- */
-typedef struct {
-    /**
-     * 消息类型
-     */
-    QueMsgType type;
-    /**
-     * 状态码
-     */
-    gint code;
-    /**
-     * 消息
-     */
-    gchararray message;
-    /**
-     * 队列数据
-     */
-    gpointer data;
-} QueuePayload;
-
-#define ALLOC_QUEUE_PAYLOAD (QueuePayload*) malloc(sizeof(QueuePayload));
-
 /**
  * 将目标字符串转换为堆字符串
  */
@@ -84,21 +44,5 @@ typedef struct {
 #define FX_FREE(ptr) \
    free(ptr);        \
    ptr = NULL;
-
-/**
- *
- * 使用宏定义释放资源
- *
- */
-#define FREE_QUEUE_PAYLOAD(ptr, freeData) \
-if((ptr)!=NULL){                          \
-   if((ptr)->message!=NULL){              \
-       FX_FREE((ptr)->message);           \
-   }                                      \
-   if((ptr)->data!=NULL && (freeData)){     \
-     FX_FREE((ptr)->data)                 \
-   }                                      \
-   FX_FREE(ptr)                           \
-}
 
 #endif //FXCURL_COMMON_H

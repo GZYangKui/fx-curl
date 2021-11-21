@@ -10,12 +10,11 @@
 
 static sqlite3 *context;
 
-extern FXWindowContext *splashWinContext;
 
 static gboolean check_db_struct();
 
 
-extern gpointer fx_init_sqlite(gpointer userData) {
+extern gboolean fx_init_sqlite(gpointer userData, GError **error) {
     gchararray sqlitePath;
     if (PROJECT_PROFILE == DEV_PROFILE) {
         sqlitePath = "../data/fxcurl.db";
@@ -29,16 +28,10 @@ extern gpointer fx_init_sqlite(gpointer userData) {
     } else {
         ok = check_db_struct();
     }
-    QueuePayload *msg = ALLOC_QUEUE_PAYLOAD
-    gchararray str = ok ? "初始化成功" : "初始化失败";
-    TRA_DUMP_STR(str);
-
-    msg->code = ok;
-    msg->message = message;
-    msg->type = CHECK_DB_CONFIG;
-    msg->data = NULL;
-
-    g_async_queue_push(splashWinContext->asyncQueue, msg);
+    if (!ok) {
+        *error = g_error_new(0,FALSE,"数据库初始化失败!");
+    }
+    return ok;
 }
 
 extern void fx_shutdown_sqlite3() {
@@ -72,15 +65,15 @@ static gboolean check_db_struct() {
         len = g_list_length(list);
         for (int i = 0; i < len; i++) {
             sql = list->data;
-            if (sql == NULL){
+            if (sql == NULL) {
                 continue;
             }
             gint rs = sqlite3_exec(context, sql, NULL, NULL, &errMsg);
             if (rs != SQLITE_OK) {
                 success = FALSE;
-                printf("数据库初始化失败:%s,错误sql语句:%s\n",errMsg,sql);
+                printf("数据库初始化失败:%s,错误sql语句:%s\n", errMsg, sql);
                 break;
-            } else{
+            } else {
                 printf("sql语句执行成功\n");
             }
         }

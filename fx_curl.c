@@ -1,7 +1,7 @@
 //
 // Created by yangkui on 2021/11/18.
 //
-
+#include "./include/ui_util.h"
 #include "./include/fx_curl.h"
 #include "./include/database.h"
 #include "./include/nav_tree_event.h"
@@ -11,6 +11,7 @@
 #define WINDOW_HEIGHT 800
 #define WINDOW_TITLE "FxCurl"
 
+
 static void window_destroy(GtkWidget *object, gpointer user_data);
 
 extern void open_fx_curl() {
@@ -18,12 +19,15 @@ extern void open_fx_curl() {
     GtkBuilder *builder;
 
     window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+
     builder = gtk_builder_new_from_resource(GET_INNER_UI_RESOURCE(MainView.ui));
 
     GObject *obj = gtk_builder_get_object(builder, "main-box");
 
 
     gtk_builder_connect_signals(builder, NULL);
+
+    set_window_default_icons(window);
 
     gtk_window_set_title(GTK_WINDOW(window), WINDOW_TITLE);
     gtk_container_add(GTK_CONTAINER(window), GTK_WIDGET(obj));
@@ -39,7 +43,7 @@ extern void open_fx_curl() {
 }
 
 static void window_destroy(GtkWidget *object, gpointer user_data) {
-    extern FXWindowContext *splashWinContext;
-    //退出当前程序
-    gtk_widget_destroy(splashWinContext->window);
+    extern void  fx_quit_curl();
+
+    fx_quit_curl();
 }
