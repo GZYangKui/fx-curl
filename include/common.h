@@ -12,12 +12,9 @@
 #include "fx_config.h"
 
 /**
- * 将目标字符串转换为堆字符串
+ * 将栈上字符串复制到堆上
  */
-#define TRA_DUMP_STR(str) \
- gchararray message = (gchararray)malloc(strlen(str)+1); \
- strcpy(message,str);
-
+extern gchararray fx_trf_stack_to_dump(gchararray src);
 
 /**
  * 释放堆内存并置NULL值

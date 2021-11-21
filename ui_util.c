@@ -17,10 +17,10 @@ gchar *logos[] = {
 extern UpdateUIRequest *fx_update_ui_request_new(gboolean status, gchararray msg, gpointer data) {
     UpdateUIRequest *request = g_malloc(sizeof(UpdateUIRequest));
     request->data = NULL;
-    request->status = status;
     request->message = NULL;
+    request->status = status;
     if (msg != NULL) {
-        TRA_DUMP_STR(request->message);
+       request->message = fx_trf_stack_to_dump(request->message);
     }
     request->data = data;
 

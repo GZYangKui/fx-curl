@@ -50,8 +50,7 @@ extern gboolean select_node_by_parent_id(gint id, GList *list) {
         gchararray name = sqlite3_column_text(preStmt, 3);
 
         if (name != NULL) {
-            TRA_DUMP_STR(name)
-            nodeTree->name = message;
+            nodeTree->name = fx_trf_stack_to_dump(name);
         } else {
             nodeTree->name = NULL;
         }
