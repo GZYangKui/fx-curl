@@ -40,12 +40,12 @@ MenuItemMeta itemMetas[] = {
         }
 };
 
-static void fx_init_node_tree();
 
+static void clear_next_node(GtkTreeIter *treeIter);
 
-static void do_create_folder(GtkTreeIter *parent,gint64 parentId);
+static void do_create_folder(GtkTreeIter *parent, gint64 parentId);
 
-static void fx_load_node_tree(GtkTreeIter *iter,gint64 parentId);
+static void fx_load_node_tree(GtkTreeIter *iter, gint64 parentId);
 
 static void internal_do_create_folder(GtkTreeIter *parent, gint64 id, gchararray name);
 
@@ -86,18 +86,18 @@ extern void fx_init_nav_tree(GtkBuilder *builder) {
     gtk_tree_view_set_model(GTK_TREE_VIEW(navTree), treeModel);
     g_object_unref(treeModel);
 
-    fx_load_node_tree(NULL,0);
+    fx_load_node_tree(NULL, 0);
 
 }
 
 extern void fx_dy_dir(GtkButton *button, gpointer userData) {
-    do_create_folder(NULL,0);
+    do_create_folder(NULL, 0);
 }
 
 
 void menu_item_select(GtkMenuItem *item, GdkEvent *event, gpointer *userData) {
     GtkTreeIter iter;
-    GtkTreePath *path =NULL;
+    GtkTreePath *path = NULL;
     GtkTreeSelection *selection;
     selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(navTree));
     GList *list = gtk_tree_selection_get_selected_rows(selection, NULL);
@@ -110,14 +110,14 @@ void menu_item_select(GtkMenuItem *item, GdkEvent *event, gpointer *userData) {
     path = list->data;
     gtk_tree_model_get_iter(treeModel, &iter, path);
     gint64 id = 0;
-    gtk_tree_model_get(treeModel,&iter,COL_ID,&id,-1);
+    gtk_tree_model_get(treeModel, &iter, COL_ID, &id, -1);
     //刷新
     if (select == &itemMetas[0]) {
-        fx_load_node_tree(&iter,id);
+        fx_load_node_tree(&iter, id);
     }
     //新增文件夹
     if (select == &itemMetas[3]) {
-        do_create_folder(&iter,id);
+        do_create_folder(&iter, id);
     }
     g_list_free(list);
 }
@@ -185,7 +185,7 @@ static void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *e
     }
 }
 
-static void do_create_folder(GtkTreeIter *parent,gint64 parentId) {
+static void do_create_folder(GtkTreeIter *parent, gint64 parentId) {
     GdkPixbuf *pixBuf;
     GtkTreeIter iter;
     GtkTreeStore *treeStore;
@@ -230,14 +230,8 @@ static void internal_do_create_folder(GtkTreeIter *parent, gint64 id, gchararray
  * 从数据库初始化列表
  *
  */
-static void fx_load_node_tree(GtkTreeIter *iter,gint64 parentId) {
-    if (iter!=NULL) {
-        //先清空旧数据
-        gint  num = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(treeModel),iter);
-//        printf("num=%d\n",num);
-//        gtk_tree_store_remove(GTK_TREE_STORE(treeModel),iter);
-    }
-
+static void fx_load_node_tree(GtkTreeIter *iter, gint64 parentId) {
+    clear_next_node(iter);
     //重新加载新数据
     GList *list = g_list_alloc();
     select_node_by_parent_id(parentId, list);
@@ -245,20 +239,42 @@ static void fx_load_node_tree(GtkTreeIter *iter,gint64 parentId) {
     GList *temp = list;
     for (int i = 0; i < len; ++i) {
         NodeTree *treeNode = temp->data;
-        if (treeNode==NULL){
+        if (treeNode == NULL) {
             continue;
         }
         internal_do_create_folder(iter, treeNode->id, treeNode->name);
         FX_FREE_TREE_NODE(treeNode, FALSE)
         temp = temp->next;
     }
-    if (iter!=NULL) {
+    if (iter != NULL) {
         GtkTreePath *treePath = NULL;
         treePath = gtk_tree_model_get_path(GTK_TREE_MODEL(treeModel), iter);
-        gtk_tree_view_expand_row(GTK_TREE_VIEW(navTree), treePath,FALSE);
+        gtk_tree_view_expand_row(GTK_TREE_VIEW(navTree), treePath, FALSE);
         gtk_tree_path_free(treePath);
     }
     g_list_free(list);
+}
+/**
+ *
+ * 清除当前迭代器下的节点列表
+ *
+ */
+static void clear_next_node(GtkTreeIter *iter) {
+    if (iter == NULL) {
+        return;
+    }
+    gint num = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(treeModel), iter);
+    if (num < 0) {
+        return;
+    }
+    gboolean ok = TRUE;
+    GtkTreeIter child;
+    while (ok) {
+        ok = gtk_tree_model_iter_children(GTK_TREE_MODEL(treeModel), &child, iter);
+        if (ok) {
+            gtk_tree_store_remove(GTK_TREE_STORE(treeModel), &child);
+        }
+    }
 }
 
 
