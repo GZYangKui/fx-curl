@@ -34,11 +34,11 @@ extern gboolean fx_init_sqlite(gpointer userData, GError **error) {
     return ok;
 }
 
-extern gboolean select_node_by_parent_id(gint id, GList *list) {
+extern gboolean select_node_by_parent_id(gint64 id, GList *list) {
     sqlite3_stmt *preStmt = NULL;
     gchararray sql = "SELECT * FROM node_tree WHERE parent_id=?";
     sqlite3_prepare_v3(context, sql, (gint) strlen(sql), SQLITE_PREPARE_PERSISTENT, &preStmt, NULL);
-    sqlite3_bind_int(preStmt, 1, id);
+    sqlite3_bind_int64(preStmt, 1, id);
 
     gint count = 0;
     while (sqlite3_step(preStmt) == SQLITE_ROW) {
@@ -66,7 +66,7 @@ extern gboolean select_node_by_parent_id(gint id, GList *list) {
     sqlite3_finalize(preStmt);
 }
 
-extern gboolean insert_tree_node(gint *id, gint parentId, gint type, gchararray name) {
+extern gboolean insert_tree_node(gint64 *id, gint64 parentId, gint type, gchararray name) {
     sqlite3_stmt *preStmt = NULL;
     gchararray sql = "INSERT INTO node_tree(type,parent_id,name,create_time) VALUES(?,?,?,?)";
     sqlite3_prepare_v3(
@@ -89,6 +89,7 @@ extern gboolean insert_tree_node(gint *id, gint parentId, gint type, gchararray 
     if (!ok) {
         *id = code;
     }
+    *id = sqlite3_last_insert_rowid(context);
     sqlite3_finalize(preStmt);
 
     return ok;

@@ -11,6 +11,14 @@ GtkTreeModel *treeModel;
 
 MenuItemMeta itemMetas[] = {
         {
+                "刷新",
+                FOLDER
+        },
+        {
+                "打开",
+                API,
+        },
+        {
                 "新增请求",
                 FOLDER
         },
@@ -34,9 +42,12 @@ MenuItemMeta itemMetas[] = {
 
 static void fx_init_node_tree();
 
-static void do_create_folder(GtkTreeIter *parent);
 
-static void internal_do_create_folder(GtkTreeIter *parent, gint id, gchararray name);
+static void do_create_folder(GtkTreeIter *parent,gint64 parentId);
+
+static void fx_load_node_tree(GtkTreeIter *iter,gint64 parentId);
+
+static void internal_do_create_folder(GtkTreeIter *parent, gint64 id, gchararray name);
 
 static void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *event);
 
@@ -75,18 +86,18 @@ extern void fx_init_nav_tree(GtkBuilder *builder) {
     gtk_tree_view_set_model(GTK_TREE_VIEW(navTree), treeModel);
     g_object_unref(treeModel);
 
-    fx_init_node_tree();
+    fx_load_node_tree(NULL,0);
 
 }
 
 extern void fx_dy_dir(GtkButton *button, gpointer userData) {
-    do_create_folder(NULL);
+    do_create_folder(NULL,0);
 }
 
 
 void menu_item_select(GtkMenuItem *item, GdkEvent *event, gpointer *userData) {
     GtkTreeIter iter;
-    GtkTreePath *path;
+    GtkTreePath *path =NULL;
     GtkTreeSelection *selection;
     selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(navTree));
     GList *list = gtk_tree_selection_get_selected_rows(selection, NULL);
@@ -98,13 +109,15 @@ void menu_item_select(GtkMenuItem *item, GdkEvent *event, gpointer *userData) {
     select = (MenuItemMeta *) userData;
     path = list->data;
     gtk_tree_model_get_iter(treeModel, &iter, path);
-    //添加请求
+    gint64 id = 0;
+    gtk_tree_model_get(treeModel,&iter,COL_ID,&id,-1);
+    //刷新
     if (select == &itemMetas[0]) {
-
+        fx_load_node_tree(&iter,id);
     }
     //新增文件夹
-    if (select == &itemMetas[1]) {
-        do_create_folder(&iter);
+    if (select == &itemMetas[3]) {
+        do_create_folder(&iter,id);
     }
     g_list_free(list);
 }
@@ -172,7 +185,7 @@ static void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *e
     }
 }
 
-static void do_create_folder(GtkTreeIter *parent) {
+static void do_create_folder(GtkTreeIter *parent,gint64 parentId) {
     GdkPixbuf *pixBuf;
     GtkTreeIter iter;
     GtkTreeStore *treeStore;
@@ -188,21 +201,21 @@ static void do_create_folder(GtkTreeIter *parent) {
     if (len <= 0) {
         return;
     }
-    gint id = 0;
-    gboolean ok = insert_tree_node(&id, 0, 0, buffer);
+    gint64 id = 0;
+    gboolean ok = insert_tree_node(&id, parentId, 0, buffer);
     if (ok) {
-        internal_do_create_folder(parent, 0, buffer);
+        internal_do_create_folder(parent, id, buffer);
     } else {
         gchar errMsg[255];
-        sprintf(errMsg, "插入数据过程发生未知错误(错误码:%d)", id);
+        sprintf(errMsg, "插入数据过程发生未知错误(错误码:%ld)", id);
         show_error_dialog("新建文件夹失败!", errMsg);
     }
 }
 
-static void internal_do_create_folder(GtkTreeIter *parent, gint id, gchararray name) {
+static void internal_do_create_folder(GtkTreeIter *parent, gint64 id, gchararray name) {
     GtkTreeIter iter;
     GdkPixbuf *pixBuf;
-    pixBuf = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(api_folder.svg), NULL);
+    pixBuf = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(folder.svg), NULL);
     gtk_tree_store_append(GTK_TREE_STORE(treeModel), &iter, parent);
     gtk_tree_store_set(GTK_TREE_STORE(treeModel), &iter,
                        ICON_COLUMN, pixBuf,
@@ -217,16 +230,33 @@ static void internal_do_create_folder(GtkTreeIter *parent, gint id, gchararray n
  * 从数据库初始化列表
  *
  */
-static void fx_init_node_tree() {
+static void fx_load_node_tree(GtkTreeIter *iter,gint64 parentId) {
+    if (iter!=NULL) {
+        //先清空旧数据
+        gint  num = gtk_tree_model_iter_n_children(GTK_TREE_MODEL(treeModel),iter);
+//        printf("num=%d\n",num);
+//        gtk_tree_store_remove(GTK_TREE_STORE(treeModel),iter);
+    }
+
+    //重新加载新数据
     GList *list = g_list_alloc();
-    select_node_by_parent_id(0, list);
+    select_node_by_parent_id(parentId, list);
     guint len = g_list_length(list);
     GList *temp = list;
     for (int i = 0; i < len; ++i) {
         NodeTree *treeNode = temp->data;
-        internal_do_create_folder(NULL, treeNode->id, treeNode->name);
-        FX_FREE_TREE_NODE(treeNode,FALSE)
+        if (treeNode==NULL){
+            continue;
+        }
+        internal_do_create_folder(iter, treeNode->id, treeNode->name);
+        FX_FREE_TREE_NODE(treeNode, FALSE)
         temp = temp->next;
+    }
+    if (iter!=NULL) {
+        GtkTreePath *treePath = NULL;
+        treePath = gtk_tree_model_get_path(GTK_TREE_MODEL(treeModel), iter);
+        gtk_tree_view_expand_row(GTK_TREE_VIEW(navTree), treePath,FALSE);
+        gtk_tree_path_free(treePath);
     }
     g_list_free(list);
 }

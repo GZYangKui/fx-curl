@@ -36,14 +36,14 @@ extern gboolean fx_init_sqlite(gpointer userData, GError **error);
  * 根据父级节点id查询节点
  *
  */
-extern gboolean select_node_by_parent_id(gint id, GList *list);
+extern gboolean select_node_by_parent_id(gint64 id, GList *list);
 
 /**
  *
  * 插入一条新记录
  *
  */
-extern gboolean insert_tree_node(gint *id, gint parentId, gint type, gchararray name);
+extern gboolean insert_tree_node(gint64 *id, gint64 parentId, gint type, gchararray name);
 
 /**
  *

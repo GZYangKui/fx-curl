@@ -8,11 +8,15 @@
         <file compressed="true">css/ErrDialogStyle.css</file>
         <file compressed="true">css/GlobalStyle.css</file>
 
-        <file>img/api_folder.svg</file>
+        <file>img/folder.svg</file>
         <file>img/logo.svg</file>
         <file>img/logo2x.svg</file>
         <file>img/logo3x.svg</file>
         <file>img/splash.jpg</file>
         <file>img/error.svg</file>
+        <file>img/add.svg</file>
+        <file>img/add_active.svg</file>
+
+
     </gresource>
 </gresources>

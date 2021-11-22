@@ -21,14 +21,16 @@
           <object class="GtkBox">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
+            <property name="spacing">5</property>
             <child>
               <object class="GtkButton">
-                <property name="label">gtk-new</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="fx_dy_dir" swapped="no"/>
+                <style>
+                  <class name="add-btn"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -48,19 +50,6 @@
                 <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton">
-                <property name="label" translatable="yes">button</property>
-                <property name="visible">True</property>
-                <property name="can-focus">True</property>
-                <property name="receives-default">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -108,7 +97,7 @@
       </object>
       <packing>
         <property name="resize">False</property>
-        <property name="shrink">True</property>
+        <property name="shrink">False</property>
       </packing>
     </child>
     <child>
@@ -141,5 +130,10 @@
         <property name="shrink">True</property>
       </packing>
     </child>
+  </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-missing-image</property>
   </object>
 </interface>

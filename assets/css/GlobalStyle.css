@@ -10,3 +10,14 @@
 .err-dialog-header-box, .err-dialog-content-box {
     padding: 10px;
 }
+
+.add-btn {
+    border-width: 0;
+    background-size: contain;
+    background-image: url("/cn/navclub/img/add.svg");
+}
+
+.add-btn:hover {
+    background-color: gray;
+    background-image: url("/cn/navclub/img/add_active.svg")
+}

@@ -14,7 +14,6 @@ typedef enum {
     FOLDER,
     //api
     API,
-
     ALL
 } ColType;
 
@@ -45,6 +44,7 @@ typedef enum {
      */
     NUM_COLS
 } TreeViewMeta;
+
 /**
  *
  * init nav tree view
