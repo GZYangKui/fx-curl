@@ -1,7 +1,6 @@
 #include <stdio.h>
 
 #include <gtk/gtk.h>
-#include "include/ui_util.h"
 #include "include/common.h"
 #include "include/database.h"
 #include "include/fx_curl.h"

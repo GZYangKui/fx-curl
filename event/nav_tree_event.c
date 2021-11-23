@@ -2,7 +2,6 @@
 // Created by yangkui on 2021/11/16.
 //
 
-#include "../include/ui_util.h"
 #include "../include/database.h"
 #include "../include/nav_tree_event.h"
 
@@ -43,11 +42,11 @@ MenuItemMeta itemMetas[] = {
 
 static void clear_next_node(GtkTreeIter *treeIter);
 
-static void do_create_folder(GtkTreeIter *parent, gint64 parentId);
+static void do_create_node(GtkTreeIter *parent, gint type, gint64 parentId);
 
 static void fx_load_node_tree(GtkTreeIter *iter, gint64 parentId);
 
-static void internal_do_create_folder(GtkTreeIter *parent, gint64 id, gchararray name);
+static void internal_do_create_folder(GtkTreeIter *parent, gint64 id, gint type, gchararray name);
 
 static void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *event);
 
@@ -91,7 +90,7 @@ extern void fx_init_nav_tree(GtkBuilder *builder) {
 }
 
 extern void fx_dy_dir(GtkButton *button, gpointer userData) {
-    do_create_folder(NULL, 0);
+    do_create_node(NULL, FOLDER, 0);
 }
 
 
@@ -115,9 +114,17 @@ void menu_item_select(GtkMenuItem *item, GdkEvent *event, gpointer *userData) {
     if (select == &itemMetas[0]) {
         fx_load_node_tree(&iter, id);
     }
+    //新增请求
+    if (select == &itemMetas[2]) {
+        do_create_node(&iter, API, id);
+    }
     //新增文件夹
     if (select == &itemMetas[3]) {
-        do_create_folder(&iter, id);
+        do_create_node(&iter, FOLDER, id);
+    }
+    //打开api接口
+    if (select == &itemMetas[1]){
+
     }
     g_list_free(list);
 }
@@ -185,7 +192,7 @@ static void do_popup_menu(GtkTreeView *treeView, gint colType, GdkEventButton *e
     }
 }
 
-static void do_create_folder(GtkTreeIter *parent, gint64 parentId) {
+static void do_create_node(GtkTreeIter *parent, gint type, gint64 parentId) {
     GdkPixbuf *pixBuf;
     GtkTreeIter iter;
     GtkTreeStore *treeStore;
@@ -195,16 +202,16 @@ static void do_create_folder(GtkTreeIter *parent, gint64 parentId) {
 
     gchar buffer[maxInputLen];
     memset(buffer, 0, maxInputLen);
-    guint64 len = open_input_dialog("请输入目录名称", NULL, maxInputLen, buffer);
+    guint64 len = open_input_dialog("请输入名称", NULL, maxInputLen, buffer);
 
     //输入为空或者取消不做处理
     if (len <= 0) {
         return;
     }
     gint64 id = 0;
-    gboolean ok = insert_tree_node(&id, parentId, 0, buffer);
+    gboolean ok = insert_tree_node(&id, parentId, type, buffer);
     if (ok) {
-        internal_do_create_folder(parent, id, buffer);
+        internal_do_create_folder(parent, id, type, buffer);
     } else {
         gchar errMsg[255];
         sprintf(errMsg, "插入数据过程发生未知错误(错误码:%ld)", id);
@@ -212,16 +219,22 @@ static void do_create_folder(GtkTreeIter *parent, gint64 parentId) {
     }
 }
 
-static void internal_do_create_folder(GtkTreeIter *parent, gint64 id, gchararray name) {
+static void internal_do_create_folder(GtkTreeIter *parent, gint64 id, gint type, gchararray name) {
     GtkTreeIter iter;
     GdkPixbuf *pixBuf;
-    pixBuf = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(folder.svg), NULL);
+    if (type == FOLDER) {
+        pixBuf = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(folder.svg), NULL);
+    } else {
+        pixBuf = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(api.svg), NULL);
+    }
     gtk_tree_store_append(GTK_TREE_STORE(treeModel), &iter, parent);
     gtk_tree_store_set(GTK_TREE_STORE(treeModel), &iter,
-                       ICON_COLUMN, pixBuf,
-                       TEXT_COLUMN, name,
                        COL_ID, id,
-                       -1);
+                       COL_TYPE, type,
+                       TEXT_COLUMN, name,
+                       ICON_COLUMN, pixBuf,
+                       -1
+    );
     g_object_unref(pixBuf);
 }
 
@@ -242,7 +255,7 @@ static void fx_load_node_tree(GtkTreeIter *iter, gint64 parentId) {
         if (treeNode == NULL) {
             continue;
         }
-        internal_do_create_folder(iter, treeNode->id, treeNode->name);
+        internal_do_create_folder(iter, treeNode->id, treeNode->type, treeNode->name);
         FX_FREE_TREE_NODE(treeNode, FALSE)
         temp = temp->next;
     }
@@ -254,6 +267,7 @@ static void fx_load_node_tree(GtkTreeIter *iter, gint64 parentId) {
     }
     g_list_free(list);
 }
+
 /**
  *
  * 清除当前迭代器下的节点列表

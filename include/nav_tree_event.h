@@ -5,21 +5,12 @@
 #ifndef FXCURL_NAV_TREE_EVENT_H
 #define FXCURL_NAV_TREE_EVENT_H
 
-#include <gtk/gtk.h>
 #include "common.h"
 
 
-typedef enum {
-    //api sets or folder
-    FOLDER,
-    //api
-    API,
-    ALL
-} ColType;
-
 typedef struct {
     gchar *name;
-    ColType colType;
+    NodeTreeType colType;
 } MenuItemMeta;
 
 typedef enum {
@@ -51,17 +42,5 @@ typedef enum {
  *
  */
 extern void fx_init_nav_tree(GtkBuilder *builder);
-
-/**
- * create a empty folder
- */
-extern void fx_dy_dir(GtkButton *button, gpointer userData);
-
-/**
- *
- * 注册导航树节点点击事件
- *@return 返回事件是否被消费，该返回值决定了事件是否向上传播
- */
-extern gboolean fx_nav_tree_click(GtkWidget *treeView, GdkEventButton *event, gpointer *userData);
 
 #endif //FXCURL_NAV_TREE_EVENT_H

@@ -17,6 +17,7 @@ pkg_search_module(GTK3 REQUIRED gtk+-3.0)
 aux_source_directory(. SOURCE_DIR)
 aux_source_directory(include SOURCE_DIR)
 aux_source_directory(event SOURCE_DIR)
+aux_source_directory(widget SOURCE_DIR)
 link_directories(lib/linux)
 
 

@@ -1,7 +1,6 @@
 //
 // Created by yangkui on 2021/11/18.
 //
-#include "./include/ui_util.h"
 #include "./include/fx_curl.h"
 #include "./include/nav_tree_event.h"
 #include "./include/nav_notebook_event.h"
@@ -43,7 +42,7 @@ extern void open_fx_curl() {
 
 static void window_destroy(GtkWidget *object, gpointer user_data) {
     extern void fx_quit_curl();
-
+    //退出当前程序
     fx_quit_curl();
 }
 
