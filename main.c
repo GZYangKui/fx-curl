@@ -39,9 +39,10 @@ static void activate(GtkApplication *_app, gpointer user_data) {
 
     gtk_container_add(GTK_CONTAINER(appWindow), mainBox);
 
-    gtk_window_set_default_size(GTK_WINDOW(appWindow), WINDOW_WIDTH, WINDOW_HEIGHT);
+    gtk_window_set_keep_above(GTK_WINDOW(appWindow),TRUE);
     gtk_window_set_position(GTK_WINDOW(appWindow), GTK_WIN_POS_CENTER);
-    gtk_window_set_type_hint(GTK_WINDOW(appWindow), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
+    gtk_window_set_default_size(GTK_WINDOW(appWindow), WINDOW_WIDTH, WINDOW_HEIGHT);
+    gtk_window_set_type_hint(GTK_WINDOW(appWindow), GDK_WINDOW_TYPE_HINT_SPLASHSCREEN);
 
     gtk_widget_show_all(appWindow);
 

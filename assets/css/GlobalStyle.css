@@ -31,17 +31,13 @@
     border-width: 0;
 }
 
-/*.tab-box {*/
-/*    spacing: 5px;*/
-/*}*/
-
 .tab-box .tab-close-btn {
     padding: 0;
     border-width: 0;
-    /*border-radius: 50%;*/
-    background-color: rgba(0,0,0,0);
+    background-image: none;
 }
 
+
 .tab-box .tab-close-btn:hover {
-    /*background-color: gray;*/
+    background-color: gray;
 }
