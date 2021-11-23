@@ -20,6 +20,21 @@ extern gchararray fx_trf_stack_to_dump(gchararray src) {
     return des;
 }
 
+extern gint64 *fx_gint64_tp_dump(gint64 stackVal) {
+    gint64 *des = g_malloc(sizeof(gint64));
+    *des = stackVal;
+}
+
+extern GdkPixbuf *fx_get_tree_icon(NodeTreeType type) {
+    GdkPixbuf *pixBuf;
+    if (type == FOLDER) {
+        pixBuf = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(folder.svg), NULL);
+    } else {
+        pixBuf = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(api.svg), NULL);
+    }
+    return pixBuf;
+}
+
 /**
  * 应用logo列表
  */
@@ -73,6 +88,12 @@ extern void add_style_sheet_to_widget(GtkWidget *target, gchararray stylesheets,
     gtk_css_provider_load_from_resource(cssProvider, stylesheets);
     gtk_style_context_add_provider(styleContext, GTK_STYLE_PROVIDER(cssProvider), prior);
 }
+
+extern void add_style_class_to_widget(GtkWidget *target, gchararray clazz) {
+    GtkStyleContext *context = gtk_widget_get_style_context(target);
+    gtk_style_context_add_class(context, clazz);
+}
+
 
 extern guint64 open_input_dialog(const gchar *title, GtkWindow *parent, guint maxLen, gchar *buff) {
     GtkWidget *entry;

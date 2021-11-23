@@ -4,6 +4,7 @@
 
 #include "../include/database.h"
 #include "../include/nav_tree_event.h"
+#include "../include/nav_notebook_event.h"
 
 GtkWidget *navTree;
 GtkTreeModel *treeModel;
@@ -104,12 +105,19 @@ void menu_item_select(GtkMenuItem *item, GdkEvent *event, gpointer *userData) {
     if (len < 1) {
         return;
     }
-    MenuItemMeta *select;
+    MenuItemMeta *select = NULL;
     select = (MenuItemMeta *) userData;
     path = list->data;
     gtk_tree_model_get_iter(treeModel, &iter, path);
-    gint64 id = 0;
-    gtk_tree_model_get(treeModel, &iter, COL_ID, &id, -1);
+    gint64 id   = 0;
+    gint type   = 0;
+    gchar *name = NULL;
+    gtk_tree_model_get(treeModel, &iter,
+                       COL_ID,      &id,
+                       COL_TYPE,    &type,
+                       TEXT_COLUMN, &name,
+                       -1
+    );
     //刷新
     if (select == &itemMetas[0]) {
         fx_load_node_tree(&iter, id);
@@ -123,8 +131,8 @@ void menu_item_select(GtkMenuItem *item, GdkEvent *event, gpointer *userData) {
         do_create_node(&iter, FOLDER, id);
     }
     //打开api接口
-    if (select == &itemMetas[1]){
-
+    if (select == &itemMetas[1]) {
+        create_note_page(name, id, (NodeTreeType) type);
     }
     g_list_free(list);
 }
@@ -221,21 +229,16 @@ static void do_create_node(GtkTreeIter *parent, gint type, gint64 parentId) {
 
 static void internal_do_create_folder(GtkTreeIter *parent, gint64 id, gint type, gchararray name) {
     GtkTreeIter iter;
-    GdkPixbuf *pixBuf;
-    if (type == FOLDER) {
-        pixBuf = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(folder.svg), NULL);
-    } else {
-        pixBuf = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(api.svg), NULL);
-    }
+    GdkPixbuf *pixbuf = fx_get_tree_icon(type);
     gtk_tree_store_append(GTK_TREE_STORE(treeModel), &iter, parent);
     gtk_tree_store_set(GTK_TREE_STORE(treeModel), &iter,
                        COL_ID, id,
                        COL_TYPE, type,
                        TEXT_COLUMN, name,
-                       ICON_COLUMN, pixBuf,
+                       ICON_COLUMN, pixbuf,
                        -1
     );
-    g_object_unref(pixBuf);
+    g_object_unref(pixbuf);
 }
 
 /**

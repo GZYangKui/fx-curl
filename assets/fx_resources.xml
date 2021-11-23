@@ -4,6 +4,7 @@
         <file compressed="true">ui/MainView.ui</file>
         <file compressed="true">ui/SplashView.ui</file>
         <file compressed="true">ui/widget/ErrorDialog.ui</file>
+        <file compressed="true">ui/widget/HttpReqPane.ui</file>
         <file compressed="true">css/SplashStyle.css</file>
         <file compressed="true">css/ErrDialogStyle.css</file>
         <file compressed="true">css/GlobalStyle.css</file>
@@ -16,6 +17,7 @@
         <file>img/splash.jpg</file>
         <file>img/error.svg</file>
         <file>img/add.svg</file>
+        <file>img/close.svg</file>
         <file>img/add_active.svg</file>
 
 

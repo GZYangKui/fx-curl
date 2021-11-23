@@ -10,6 +10,20 @@
 #include <string.h>
 #include "fx_config.h"
 
+/**
+ * http请求方法
+ */
+typedef enum {
+    GET,
+    POST,
+    PUT,
+    PATCH,
+    DELETE,
+    COPY,
+    HEAD,
+    OPTIONS
+} HttpRequestMethod;
+
 typedef enum {
     //文件夹
     FOLDER,
@@ -90,6 +104,13 @@ extern void show_error_dialog(gchararray title, gchararray context);
  */
 extern void add_style_sheet_to_widget(GtkWidget *target, gchararray stylesheets, gint prior);
 
+/**
+ *
+ * 将指定class类名添加到指定widget上
+ *
+ */
+extern void add_style_class_to_widget(GtkWidget *target,gchararray clazz);
+
 
 /**
  * 获取1970到当前时间的毫秒数
@@ -100,6 +121,20 @@ extern gint64 fx_get_timestamp();
  * 将栈上字符串复制到堆上
  */
 extern gchararray fx_trf_stack_to_dump(gchararray src);
+/**
+ *
+ * 将栈上长整形拷贝到堆上
+ *
+ */
+extern gint64* fx_gint64_tp_dump(gint64 stackVal);
+
+/**
+ *
+ * 获取Node图标
+ *
+ */
+extern GdkPixbuf *fx_get_tree_icon(NodeTreeType type);
+
 
 /**
  * 释放堆内存并置NULL值

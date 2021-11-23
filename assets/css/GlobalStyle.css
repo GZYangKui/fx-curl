@@ -21,3 +21,27 @@
     background-color: gray;
     background-image: url("/cn/navclub/img/add_active.svg")
 }
+
+
+.http-request-pane-header, .http-request-pane-footer {
+    padding: 5px;
+}
+
+.http-request-pane-header scrolledwindow {
+    border-width: 0;
+}
+
+/*.tab-box {*/
+/*    spacing: 5px;*/
+/*}*/
+
+.tab-box .tab-close-btn {
+    padding: 0;
+    border-width: 0;
+    /*border-radius: 50%;*/
+    background-color: rgba(0,0,0,0);
+}
+
+.tab-box .tab-close-btn:hover {
+    /*background-color: gray;*/
+}
