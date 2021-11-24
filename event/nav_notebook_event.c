@@ -34,23 +34,23 @@ extern void create_note_page(gchararray name, gint64 id, NodeTreeType type) {
 
     GtkWidget *tabLabel = fx_create_tab_label(name, id, type);
 
-    GtkWidget *pane = http_request_pane_new(id);
-    gint index = gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
-                                          pane,
+    HttpRequestPane *pane = http_request_pane_new(id);
+    pane->index= gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
+                                          pane->content,
                                           tabLabel
     );
-    g_hash_table_insert(hashTable, fx_gint64_tp_dump(id), &index);
+
+    g_hash_table_insert(hashTable, fx_gint64_tp_dump(id), pane);
     gtk_widget_show_all(notebook);
 
 }
 
 static void close_btn_clicked(GtkButton *btn, gpointer data) {
-    gint *value = g_hash_table_lookup(hashTable, data);
-    if (value != NULL) {
-        gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), *value);
+    HttpRequestPane *pane = g_hash_table_lookup(hashTable, data);
+    if (pane != NULL) {
+        gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), pane->index);
         g_hash_table_remove(hashTable, data);
     }
-
     gtk_widget_show_all(notebook);
     FX_FREE(data)
 }

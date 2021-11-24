@@ -1,6 +1,5 @@
 #include <stdio.h>
 
-#include <gtk/gtk.h>
 #include "include/common.h"
 #include "include/database.h"
 #include "include/fx_curl.h"
@@ -29,6 +28,14 @@ static void activate(GtkApplication *_app, gpointer user_data) {
     GtkWidget *mainBox;
     GtkBuilder *builder;
 
+    //全局设置应用为暗黑主题
+    g_object_set(
+            gtk_settings_get_default(),
+            "gtk-application-prefer-dark-theme",
+            TRUE,
+            NULL
+    );
+
     appWindow = gtk_application_window_new(app);
     builder = gtk_builder_new_from_resource(GET_INNER_UI_RESOURCE(SplashView.ui));
 
@@ -39,12 +46,13 @@ static void activate(GtkApplication *_app, gpointer user_data) {
 
     gtk_container_add(GTK_CONTAINER(appWindow), mainBox);
 
-    gtk_window_set_keep_above(GTK_WINDOW(appWindow),TRUE);
+    gtk_window_set_keep_above(GTK_WINDOW(appWindow), TRUE);
     gtk_window_set_position(GTK_WINDOW(appWindow), GTK_WIN_POS_CENTER);
     gtk_window_set_default_size(GTK_WINDOW(appWindow), WINDOW_WIDTH, WINDOW_HEIGHT);
     gtk_window_set_type_hint(GTK_WINDOW(appWindow), GDK_WINDOW_TYPE_HINT_SPLASHSCREEN);
 
     gtk_widget_show_all(appWindow);
+
 
     apply_global_style();
 
@@ -84,7 +92,7 @@ static void requestUpdateUI(gboolean ok, GError *error) {
 static gboolean update_ui(gpointer userData) {
     UpdateUIRequest *request = userData;
     if (!request->status) {
-        show_error_dialog("程序初始失败!",request->message);
+        show_error_dialog("程序初始失败!", request->message);
         g_application_quit(G_APPLICATION(app));
     } else {
         alreadyCheckTask++;
@@ -98,10 +106,11 @@ static gboolean update_ui(gpointer userData) {
     FREE_UPDATE_UI_REQUEST(request)
     return FALSE;
 }
+
 /**
  * 退出当前程序
  */
-extern void fx_quit_curl(){
+extern void fx_quit_curl() {
     gtk_widget_destroy(appWindow);
 }
 

@@ -17,7 +17,7 @@
             <property name="visible">True</property>
             <property name="can-focus">False</property>
             <child>
-              <object class="GtkComboBoxText">
+              <object class="GtkComboBoxText" id="mdComBox">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="active">0</property>
@@ -40,7 +40,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry">
+              <object class="GtkEntry" id="textField">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
               </object>
@@ -85,32 +85,119 @@
                     <property name="can-focus">True</property>
                     <property name="scrollable">True</property>
                     <child>
-                      <object class="GtkTreeView" id="pTV">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
+                        <property name="can-focus">False</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkTreeView" id="pTV">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <child internal-child="selection">
+                              <object class="GtkTreeSelection"/>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="pKey">
+                                <property name="resizable">True</property>
+                                <property name="title" translatable="yes">Key</property>
+                                <property name="expand">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="pVal">
+                                <property name="resizable">True</property>
+                                <property name="title" translatable="yes">Value</property>
+                                <property name="expand">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="pDst">
+                                <property name="resizable">True</property>
+                                <property name="title" translatable="yes">Description</property>
+                                <property name="expand">True</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
                         </child>
                         <child>
-                          <object class="GtkTreeViewColumn" id="pKey">
-                            <property name="resizable">True</property>
-                            <property name="title" translatable="yes">Key</property>
-                            <property name="expand">True</property>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkButton" id="pHP">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                    <property name="always-show-image">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <child>
+                                  <object class="GtkButton" id="pAD">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="pDL">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <style>
+                              <class name="request-form-action-box"/>
+                            </style>
                           </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn" id="pVal">
-                            <property name="resizable">True</property>
-                            <property name="title" translatable="yes">Value</property>
-                            <property name="expand">True</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn" id="pDst">
-                            <property name="resizable">True</property>
-                            <property name="title" translatable="yes">Description</property>
-                            <property name="expand">True</property>
-                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
                         </child>
                       </object>
                     </child>
@@ -125,29 +212,116 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkTreeView" id="hTV">
+                      <object class="GtkBox">
                         <property name="visible">True</property>
-                        <property name="can-focus">True</property>
-                        <child internal-child="selection">
-                          <object class="GtkTreeSelection"/>
+                        <property name="can-focus">False</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkTreeView" id="hTV">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <child internal-child="selection">
+                              <object class="GtkTreeSelection"/>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="hKey">
+                                <property name="title" translatable="yes">Key</property>
+                                <property name="expand">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="hVal">
+                                <property name="title" translatable="yes">Value</property>
+                                <property name="expand">True</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkTreeViewColumn" id="hDst">
+                                <property name="title" translatable="yes">Description</property>
+                                <property name="expand">True</property>
+                              </object>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
                         </child>
                         <child>
-                          <object class="GtkTreeViewColumn" id="hKey">
-                            <property name="title" translatable="yes">Key</property>
-                            <property name="expand">True</property>
+                          <object class="GtkBox">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="orientation">vertical</property>
+                                <child>
+                                  <object class="GtkButton" id="hHP">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                    <property name="always-show-image">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <child>
+                                  <object class="GtkButton" id="hAD">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="hDL">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <style>
+                              <class name="request-form-action-box"/>
+                            </style>
                           </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn" id="hVal">
-                            <property name="title" translatable="yes">Value</property>
-                            <property name="expand">True</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkTreeViewColumn" id="hDst">
-                            <property name="title" translatable="yes">Description</property>
-                            <property name="expand">True</property>
-                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
                         </child>
                       </object>
                       <packing>

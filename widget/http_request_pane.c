@@ -19,19 +19,43 @@ typedef enum {
     HEADERS
 } RequestTreeType;
 
+static void http_request_url_change(GtkEntry *,gpointer);
+
+static void http_request_method_change(GtkComboBoxText *, gpointer);
+
+
 static GtkWidget *internal_init_tree_view(GtkBuilder *, RequestTreeType);
 
-extern GtkWidget *http_request_pane_new(gint64 id) {
+
+
+static void *internal_init_btn(GtkBuilder *builder, HttpRequestPane *requestPane, RequestTreeType type);
+
+
+extern HttpRequestPane *http_request_pane_new(gint64 id) {
+    HttpRequestPane *requestPane = g_malloc(sizeof(HttpRequestPane));
+
+    requestPane->id = id;
+    requestPane->current = 0;
+
     gchararray path = GET_INNER_UI_RESOURCE(widget/HttpReqPane.ui);
     GtkBuilder *builder = gtk_builder_new_from_resource(path);
 
-    GtkWidget *pTV = internal_init_tree_view(builder, PARAMS);
-    GtkWidget *hTV = internal_init_tree_view(builder, HEADERS);
+    requestPane->pTV = internal_init_tree_view(builder, PARAMS);
+    requestPane->hTV = internal_init_tree_view(builder, HEADERS);
 
-    GtkWidget *pane = GTK_WIDGET(gtk_builder_get_object(builder, "httpReqPane"));
+    internal_init_btn(builder, requestPane, PARAMS);
+    internal_init_btn(builder, requestPane, HEADERS);
+
+    GtkEntry *textField = GTK_ENTRY(gtk_builder_get_object(builder,"textField"));
+    GtkComboBox *mdComBox = GTK_COMBO_BOX(gtk_builder_get_object(builder, "mdComBox"));
+
+    g_signal_connect(mdComBox, "changed", http_request_method_change, requestPane);
+    g_signal_connect(textField,"activate",http_request_url_change,requestPane);
+
+    requestPane->content = GTK_WIDGET(gtk_builder_get_object(builder, "httpReqPane"));
 
 
-    return pane;
+    return requestPane;
 }
 
 static GtkWidget *internal_init_tree_view(GtkBuilder *builder, RequestTreeType type) {
@@ -77,4 +101,48 @@ static GtkWidget *internal_init_tree_view(GtkBuilder *builder, RequestTreeType t
     return treeView;
 }
 
+static void *internal_init_btn(GtkBuilder *builder, HttpRequestPane *requestPane, RequestTreeType type) {
+
+    GtkWidget *addBtn = GTK_WIDGET(gtk_builder_get_object(builder, type == PARAMS ? "pAD" : "hAD"));
+    GtkWidget *helpBtn = GTK_WIDGET(gtk_builder_get_object(builder, type == PARAMS ? "pHP" : "hHP"));
+    GtkWidget *deleteBtn = GTK_WIDGET(gtk_builder_get_object(builder, type == PARAMS ? "pDL" : "hDL"));
+
+
+    GdkPixbuf *addIcon = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(add_round.svg), NULL);
+    GdkPixbuf *helpIcon = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(help.svg), NULL);
+    GdkPixbuf *deleteIcon = gdk_pixbuf_new_from_resource(GET_INNER_IMG_RESOURCE(delete.svg), NULL);
+
+
+    gtk_button_set_image(GTK_BUTTON(addBtn), gtk_image_new_from_pixbuf(addIcon));
+    gtk_button_set_image(GTK_BUTTON(helpBtn), gtk_image_new_from_pixbuf(helpIcon));
+    gtk_button_set_image(GTK_BUTTON(deleteBtn), gtk_image_new_from_pixbuf(deleteIcon));
+
+    g_object_unref(addIcon);
+    g_object_unref(helpIcon);
+    g_object_unref(deleteIcon);
+}
+
+/**
+ *
+ * http请求方法改变将会回调当前函数
+ *
+ */
+static void http_request_method_change(GtkComboBoxText *widget, gpointer data) {
+    gint index = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
+    if (index == -1) {
+        return;
+    }
+    HttpRequestPane *pane = (HttpRequestPane *) data;
+    pane->method = (HttpRequestMethod) index;
+    printf("%d\n",pane->method);
+}
+/**
+ *
+ * 当用户改变请求url时回调当前函数
+ *
+ */
+static void http_request_url_change(GtkEntry *entry,gpointer data){
+    HttpRequestPane *pane = (HttpRequestPane *) data;
+
+}
 

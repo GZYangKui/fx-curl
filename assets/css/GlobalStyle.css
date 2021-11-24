@@ -31,6 +31,11 @@
     border-width: 0;
 }
 
+.http-request-pane-header .request-form-action-box{
+    background-color: #343434;
+    padding: 5px;
+}
+
 .tab-box .tab-close-btn {
     padding: 0;
     border-width: 0;
@@ -41,3 +46,4 @@
 .tab-box .tab-close-btn:hover {
     background-color: gray;
 }
+
