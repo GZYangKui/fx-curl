@@ -29,6 +29,8 @@ typedef struct {
     gint index;
     //请求notebook中位置
     gint current;
+    //http请求url
+    gchararray url;
     //请求方法
     HttpRequestMethod method;
 } HttpRequestPane;

@@ -68,6 +68,7 @@
                 <property name="can-focus">True</property>
                 <property name="hadjustment">adjustment1</property>
                 <property name="vadjustment">adjustment1</property>
+                <property name="headers-visible">False</property>
                 <signal name="button-press-event" handler="fx_nav_tree_click" swapped="no"/>
                 <child internal-child="selection">
                   <object class="GtkTreeSelection"/>
@@ -129,10 +130,5 @@
         <property name="shrink">True</property>
       </packing>
     </child>
-  </object>
-  <object class="GtkImage" id="image1">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="stock">gtk-missing-image</property>
   </object>
 </interface>
