@@ -6,6 +6,8 @@
     <property name="visible">True</property>
     <property name="can-focus">True</property>
     <property name="orientation">vertical</property>
+    <property name="position-set">True</property>
+    <property name="wide-handle">True</property>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
@@ -83,7 +85,9 @@
                   <object class="GtkNotebook">
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
+                    <property name="show-border">False</property>
                     <property name="scrollable">True</property>
+                    <property name="enable-popup">True</property>
                     <child>
                       <object class="GtkBox">
                         <property name="visible">True</property>
@@ -393,6 +397,7 @@
           <object class="GtkNotebook">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
+            <property name="show-border">False</property>
             <child>
               <placeholder/>
             </child>

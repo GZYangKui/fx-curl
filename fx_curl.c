@@ -7,7 +7,7 @@
 
 #define WINDOW_WIDTH 1300
 #define WINDOW_HEIGHT 800
-#define WINDOW_TITLE "FxCurl"
+#define WINDOW_TITLE "FXCurl"
 
 
 static void window_destroy(GtkWidget *object, gpointer user_data);

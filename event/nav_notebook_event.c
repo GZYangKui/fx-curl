@@ -25,16 +25,16 @@ extern void fx_inti_nav_notebook(GtkBuilder *builder) {
 
 
 extern void create_note_page(gchararray name, gint64 id, NodeTreeType type) {
-    gint *value = (gint *) g_hash_table_lookup(hashTable, &id);
+    HttpRequestPane *pane = (HttpRequestPane *) g_hash_table_lookup(hashTable, &id);
     //page已经存在直接切换到到该page
-    if (value != NULL) {
-        gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), *value);
+    if (pane != NULL) {
+        gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), pane->index);
         return;
     }
 
     GtkWidget *tabLabel = fx_create_tab_label(name, id, type);
 
-    HttpRequestPane *pane = http_request_pane_new(id);
+    pane = http_request_pane_new(id);
     pane->index= gtk_notebook_append_page(GTK_NOTEBOOK(notebook),
                                           pane->content,
                                           tabLabel
@@ -42,6 +42,9 @@ extern void create_note_page(gchararray name, gint64 id, NodeTreeType type) {
 
     g_hash_table_insert(hashTable, fx_gint64_tp_dump(id), pane);
     gtk_widget_show_all(notebook);
+
+    //切换到当前页
+    gtk_notebook_set_current_page(GTK_NOTEBOOK(notebook), pane->index);
 
 }
 
