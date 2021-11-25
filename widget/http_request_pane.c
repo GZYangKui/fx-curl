@@ -6,6 +6,7 @@
 #include "../include/http_request_pane.h"
 
 typedef enum {
+    OPT,
     KEY,
     VALUE,
     DESC,
@@ -19,13 +20,12 @@ typedef enum {
     HEADERS
 } RequestTreeType;
 
-static void http_request_url_change(GtkEntry *,gpointer);
+static void http_request_url_change(GtkEntry *, gpointer);
 
 static void http_request_method_change(GtkComboBoxText *, gpointer);
 
 
 static GtkWidget *internal_init_tree_view(GtkBuilder *, RequestTreeType);
-
 
 
 static void *internal_init_btn(GtkBuilder *builder, HttpRequestPane *requestPane, RequestTreeType type);
@@ -46,11 +46,11 @@ extern HttpRequestPane *http_request_pane_new(gint64 id) {
     internal_init_btn(builder, requestPane, PARAMS);
     internal_init_btn(builder, requestPane, HEADERS);
 
-    GtkEntry *textField = GTK_ENTRY(gtk_builder_get_object(builder,"textField"));
+    GtkEntry *textField = GTK_ENTRY(gtk_builder_get_object(builder, "textField"));
     GtkComboBox *mdComBox = GTK_COMBO_BOX(gtk_builder_get_object(builder, "mdComBox"));
 
     g_signal_connect(mdComBox, "changed", http_request_method_change, requestPane);
-    g_signal_connect(textField,"activate",http_request_url_change,requestPane);
+    g_signal_connect(textField, "activate", http_request_url_change, requestPane);
 
     requestPane->content = GTK_WIDGET(gtk_builder_get_object(builder, "httpReqPane"));
 
@@ -69,24 +69,30 @@ static GtkWidget *internal_init_tree_view(GtkBuilder *builder, RequestTreeType t
 
 
     GtkTreeModel *pTM = GTK_TREE_MODEL(gtk_tree_store_new(COL_NUM,
+                                                          G_TYPE_BOOLEAN,
                                                           G_TYPE_STRING,
                                                           G_TYPE_STRING,
                                                           G_TYPE_STRING)
     );
 
-    GtkTreeViewColumn *key = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, type == PARAMS ? "pKey" : "hKey"));
-    GtkTreeViewColumn *val = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, type == PARAMS ? "pVal" : "hVal"));
-    GtkTreeViewColumn *dst = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, type == PARAMS ? "pDst" : "hDst"));
-
     GtkCellRenderer *pKeyRender = gtk_cell_renderer_text_new();
     GtkCellRenderer *pValRender = gtk_cell_renderer_text_new();
     GtkCellRenderer *pDstRender = gtk_cell_renderer_text_new();
+    GtkCellRenderer *optRender = gtk_cell_renderer_toggle_new();
+
+
+    GtkTreeViewColumn *key = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, type == PARAMS ? "pKey" : "hKey"));
+    GtkTreeViewColumn *val = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, type == PARAMS ? "pVal" : "hVal"));
+    GtkTreeViewColumn *dst = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, type == PARAMS ? "pDst" : "hDst"));
+    GtkTreeViewColumn *opt = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, type == PARAMS ? "pOpt" : "hOpt"));
+
 
     gtk_tree_view_column_pack_start(key, pKeyRender, FALSE);
     gtk_tree_view_column_pack_start(val, pValRender, FALSE);
     gtk_tree_view_column_pack_start(dst, pDstRender, FALSE);
+    gtk_tree_view_column_pack_start(opt, optRender, FALSE);
 
-
+    gtk_tree_view_column_add_attribute(opt,optRender,"active",OPT);
     gtk_tree_view_column_add_attribute(key, pKeyRender, "text", KEY);
     gtk_tree_view_column_add_attribute(val, pValRender, "text", VALUE);
     gtk_tree_view_column_add_attribute(dst, pDstRender, "text", DESC);
@@ -134,14 +140,15 @@ static void http_request_method_change(GtkComboBoxText *widget, gpointer data) {
     }
     HttpRequestPane *pane = (HttpRequestPane *) data;
     pane->method = (HttpRequestMethod) index;
-    printf("%d\n",pane->method);
+    printf("%d\n", pane->method);
 }
+
 /**
  *
  * 当用户改变请求url时回调当前函数
  *
  */
-static void http_request_url_change(GtkEntry *entry,gpointer data){
+static void http_request_url_change(GtkEntry *entry, gpointer data) {
     HttpRequestPane *pane = (HttpRequestPane *) data;
 
 }

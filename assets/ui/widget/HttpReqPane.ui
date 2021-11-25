@@ -97,23 +97,26 @@
                               <object class="GtkTreeSelection"/>
                             </child>
                             <child>
+                              <object class="GtkTreeViewColumn" id="pOpt"/>
+                            </child>
+                            <child>
                               <object class="GtkTreeViewColumn" id="pKey">
                                 <property name="resizable">True</property>
-                                <property name="title" translatable="yes">Key</property>
+                                <property name="title" translatable="yes">键</property>
                                 <property name="expand">True</property>
                               </object>
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="pVal">
                                 <property name="resizable">True</property>
-                                <property name="title" translatable="yes">Value</property>
+                                <property name="title" translatable="yes">值</property>
                                 <property name="expand">True</property>
                               </object>
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="pDst">
                                 <property name="resizable">True</property>
-                                <property name="title" translatable="yes">Description</property>
+                                <property name="title" translatable="yes">描述</property>
                                 <property name="expand">True</property>
                               </object>
                             </child>
@@ -205,7 +208,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Params</property>
+                        <property name="label" translatable="yes">请求参数</property>
                       </object>
                       <packing>
                         <property name="tab-fill">False</property>
@@ -224,20 +227,23 @@
                               <object class="GtkTreeSelection"/>
                             </child>
                             <child>
+                              <object class="GtkTreeViewColumn" id="hOpt"/>
+                            </child>
+                            <child>
                               <object class="GtkTreeViewColumn" id="hKey">
-                                <property name="title" translatable="yes">Key</property>
+                                <property name="title" translatable="yes">键</property>
                                 <property name="expand">True</property>
                               </object>
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="hVal">
-                                <property name="title" translatable="yes">Value</property>
+                                <property name="title" translatable="yes">值</property>
                                 <property name="expand">True</property>
                               </object>
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="hDst">
-                                <property name="title" translatable="yes">Description</property>
+                                <property name="title" translatable="yes">描述</property>
                                 <property name="expand">True</property>
                               </object>
                             </child>
@@ -332,7 +338,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Headers</property>
+                        <property name="label" translatable="yes">请求头</property>
                       </object>
                       <packing>
                         <property name="position">1</property>
@@ -352,7 +358,7 @@
                       <object class="GtkLabel">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
-                        <property name="label" translatable="yes">Body</property>
+                        <property name="label" translatable="yes">请求体</property>
                       </object>
                       <packing>
                         <property name="position">2</property>
