@@ -192,16 +192,19 @@ static void fx_add_form_row(GtkWidget *widget, gpointer data) {
 
 static void fx_remove_form_row(GtkWidget *widget, gpointer data) {
     GtkTreeIter iter;
-    GtkTreeIter pre;
     GtkTreeView *treeView = data;
     GtkTreeModel *treeModel = gtk_tree_view_get_model(treeView);
     GtkTreeSelection *selection = gtk_tree_view_get_selection(treeView);
 
     gboolean ok = gtk_tree_selection_get_selected(selection, &treeModel, &iter);
     if (ok) {
-        pre = iter;
+        GtkTreeIter *pre = gtk_tree_iter_copy(&iter);
         //选中最后一个节点
-        gtk_tree_model_iter_previous(treeModel, &pre);
+        if (gtk_tree_model_iter_previous(treeModel, pre)) {
+            gtk_tree_selection_select_iter(selection, pre);
+        }
+        //释放掉复制对象
+        gtk_tree_iter_free(pre);
         //移除目标节点
         gtk_tree_store_remove(GTK_TREE_STORE(treeModel), &iter);
     }
