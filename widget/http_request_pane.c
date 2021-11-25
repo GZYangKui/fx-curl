@@ -5,6 +5,9 @@
 
 #include "../include/http_request_pane.h"
 
+#define RENDER_EXTRA_PROP "bind-column"
+
+
 typedef enum {
     OPT,
     KEY,
@@ -20,6 +23,7 @@ typedef enum {
     HEADERS
 } RequestTreeType;
 
+
 static void fx_add_form_row(GtkWidget *, gpointer);
 
 static void fx_remove_form_row(GtkWidget *, gpointer);
@@ -30,6 +34,8 @@ static void http_request_method_change(GtkComboBoxText *, gpointer);
 
 
 static GtkWidget *internal_init_tree_view(GtkBuilder *, RequestTreeType);
+
+static void fx_tree_view_edited(GtkCellRendererText *, gchar *, gchar *, gpointer);
 
 
 static void *internal_init_btn(GtkBuilder *builder, HttpRequestPane *requestPane, RequestTreeType type);
@@ -85,10 +91,25 @@ static GtkWidget *internal_init_tree_view(GtkBuilder *builder, RequestTreeType t
     GtkCellRenderer *optRender = gtk_cell_renderer_toggle_new();
 
 
+    g_object_set(pKeyRender, "editable", TRUE, NULL);
+    g_object_set(pValRender, "editable", TRUE, NULL);
+    g_object_set(pDstRender, "editable", TRUE, NULL);
+
+    g_signal_connect(pKeyRender, "edited", fx_tree_view_edited, treeView);
+    g_signal_connect(pValRender, "edited", fx_tree_view_edited, treeView);
+    g_signal_connect(pDstRender, "edited", fx_tree_view_edited, treeView);
+
+
     GtkTreeViewColumn *key = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, type == PARAMS ? "pKey" : "hKey"));
     GtkTreeViewColumn *val = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, type == PARAMS ? "pVal" : "hVal"));
     GtkTreeViewColumn *dst = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, type == PARAMS ? "pDst" : "hDst"));
     GtkTreeViewColumn *opt = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, type == PARAMS ? "pOpt" : "hOpt"));
+
+
+    g_object_set_data(G_OBJECT(optRender), RENDER_EXTRA_PROP, GUINT_TO_POINTER(OPT));
+    g_object_set_data(G_OBJECT(pKeyRender), RENDER_EXTRA_PROP, GUINT_TO_POINTER(KEY));
+    g_object_set_data(G_OBJECT(pValRender), RENDER_EXTRA_PROP, GUINT_TO_POINTER(VALUE));
+    g_object_set_data(G_OBJECT(pDstRender), RENDER_EXTRA_PROP, GUINT_TO_POINTER(DESC));
 
 
     gtk_tree_view_column_pack_start(key, pKeyRender, FALSE);
@@ -203,9 +224,25 @@ static void fx_remove_form_row(GtkWidget *widget, gpointer data) {
         if (gtk_tree_model_iter_previous(treeModel, pre)) {
             gtk_tree_selection_select_iter(selection, pre);
         }
-        //释放掉复制对象
+        //释放复制对象
         gtk_tree_iter_free(pre);
         //移除目标节点
         gtk_tree_store_remove(GTK_TREE_STORE(treeModel), &iter);
     }
+}
+
+static void fx_tree_view_edited(GtkCellRendererText *cell,
+                                gchar *pathStr,
+                                gchar *newStr,
+                                gpointer userData) {
+    GtkTreeView *treeView = userData;
+    GtkTreeIter iter;
+    GtkTreePath *path = gtk_tree_path_new_from_string(pathStr);
+    GtkTreeModel *treeModel = gtk_tree_view_get_model(GTK_TREE_VIEW(treeView));
+    gboolean ok = gtk_tree_model_get_iter(treeModel, &iter, path);
+    if (!ok) {
+        return;
+    }
+    gint column = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(cell), RENDER_EXTRA_PROP));
+    gtk_tree_store_set(GTK_TREE_STORE(treeModel),&iter,column,newStr,-1);
 }

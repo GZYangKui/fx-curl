@@ -100,13 +100,16 @@
                               <object class="GtkTreeSelection"/>
                             </child>
                             <child>
-                              <object class="GtkTreeViewColumn" id="pOpt"/>
+                              <object class="GtkTreeViewColumn" id="pOpt">
+                                <property name="clickable">True</property>
+                              </object>
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="pKey">
                                 <property name="resizable">True</property>
                                 <property name="title" translatable="yes">键</property>
                                 <property name="expand">True</property>
+                                <property name="clickable">True</property>
                               </object>
                             </child>
                             <child>
@@ -114,6 +117,7 @@
                                 <property name="resizable">True</property>
                                 <property name="title" translatable="yes">值</property>
                                 <property name="expand">True</property>
+                                <property name="clickable">True</property>
                               </object>
                             </child>
                             <child>
@@ -121,6 +125,7 @@
                                 <property name="resizable">True</property>
                                 <property name="title" translatable="yes">描述</property>
                                 <property name="expand">True</property>
+                                <property name="clickable">True</property>
                               </object>
                             </child>
                           </object>
@@ -243,24 +248,29 @@
                               <object class="GtkTreeSelection"/>
                             </child>
                             <child>
-                              <object class="GtkTreeViewColumn" id="hOpt"/>
+                              <object class="GtkTreeViewColumn" id="hOpt">
+                                <property name="clickable">True</property>
+                              </object>
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="hKey">
                                 <property name="title" translatable="yes">键</property>
                                 <property name="expand">True</property>
+                                <property name="clickable">True</property>
                               </object>
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="hVal">
                                 <property name="title" translatable="yes">值</property>
                                 <property name="expand">True</property>
+                                <property name="clickable">True</property>
                               </object>
                             </child>
                             <child>
                               <object class="GtkTreeViewColumn" id="hDst">
                                 <property name="title" translatable="yes">描述</property>
                                 <property name="expand">True</property>
+                                <property name="clickable">True</property>
                               </object>
                             </child>
                           </object>
