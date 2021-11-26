@@ -13,6 +13,9 @@ configure_file(fx_config.bin fx_config.h)
 find_package(PkgConfig REQUIRED)
 
 pkg_search_module(GTK3 REQUIRED gtk+-3.0)
+pkg_search_module(LIBSOUP REQUIRED libsoup-3.0)
+
+
 
 aux_source_directory(. SOURCE_DIR)
 aux_source_directory(include SOURCE_DIR)
@@ -24,5 +27,8 @@ link_directories(lib/linux)
 add_executable(fxcurl ${SOURCE_DIR})
 include_directories("${PROJECT_BINARY_DIR}")
 include_directories(${GTK3_INCLUDE_DIRS})
+include_directories(${LIBSOUP_INCLUDE_DIRS})
+
 target_link_libraries(fxcurl ${GTK3_LIBRARIES})
+target_link_libraries(fxcurl ${LIBSOUP_LIBRARIES})
 target_link_libraries(fxcurl sqlite3)

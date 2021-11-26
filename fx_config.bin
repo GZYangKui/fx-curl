@@ -2,5 +2,7 @@
 #define DEV_PROFILE 0
 //生产环境
 #define PROD_PROFILE 1
+//不输出断言信息
+//#define NDEBUG
 //项目当前所处环境
 #define PROJECT_PROFILE DEV_PROFILE

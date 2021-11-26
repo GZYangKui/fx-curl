@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fx_config.h"
+#include "assert.h"
 
 /**
  * http请求方法
@@ -134,6 +135,13 @@ extern gint64* fx_gint64_tp_dump(gint64 stackVal);
  *
  */
 extern GdkPixbuf *fx_get_tree_icon(NodeTreeType type);
+
+/**
+ *
+ * 获取枚举http请求方法对应http请求字符创
+ *
+ */
+extern gchararray fx_get_request_method_str(HttpRequestMethod method);
 
 
 /**

@@ -35,6 +35,20 @@ extern GdkPixbuf *fx_get_tree_icon(NodeTreeType type) {
     return pixBuf;
 }
 
+extern gchararray fx_get_request_method_str(HttpRequestMethod method) {
+    static const gchararray HTTP_REQUEST_METHODS[] = {
+            "GET",
+            "POST",
+            "PUT",
+            "PATCH",
+            "DELETE",
+            "COPY",
+            "HEAD",
+            "OPTIONS"
+    };
+    return *(HTTP_REQUEST_METHODS + method);
+}
+
 /**
  * 应用logo列表
  */
@@ -148,7 +162,7 @@ extern void show_error_dialog(gchararray title, gchararray content) {
     GtkWidget *errHeaderText;
     GtkWidget *errContentText;
 
-    gchararray path = GET_INNER_UI_RESOURCE(widget/ErrorDialog.ui);
+    gchararray path = GET_INNER_UI_RESOURCE(widget / ErrorDialog.ui);
     builder = gtk_builder_new_from_resource(path);
 
     errIcon = GTK_WIDGET(gtk_builder_get_object(builder, "errIcon"));
@@ -174,4 +188,5 @@ extern void show_error_dialog(gchararray title, gchararray content) {
 
     gtk_widget_destroy(errDialog);
 }
+
 

@@ -2,7 +2,8 @@
 // Created by yangkui on 2021/11/23.
 //
 
-
+#include <libsoup/soup.h>
+#include "../include/http_util.h"
 #include "../include/http_request_pane.h"
 
 #define RENDER_EXTRA_PROP "bind-column"
@@ -32,6 +33,9 @@ static void http_request_url_change(GtkEntry *, gpointer);
 
 static void http_request_method_change(GtkComboBoxText *, gpointer);
 
+static void http_send_http_request(GtkButton *, gpointer);
+
+static void http_request_async_callback(GObject *, GAsyncResult *, gpointer);
 
 static GtkWidget *internal_init_tree_view(GtkBuilder *, RequestTreeType);
 
@@ -57,9 +61,11 @@ extern HttpRequestPane *http_request_pane_new(gint64 id) {
     internal_init_btn(builder, requestPane, PARAMS);
     internal_init_btn(builder, requestPane, HEADERS);
 
+    GtkButton *btn = GTK_BUTTON(gtk_builder_get_object(builder, "sendBtn"));
     GtkEntry *textField = GTK_ENTRY(gtk_builder_get_object(builder, "textField"));
     GtkComboBox *mdComBox = GTK_COMBO_BOX(gtk_builder_get_object(builder, "mdComBox"));
 
+    g_signal_connect(btn, "clicked", http_send_http_request, requestPane);
     g_signal_connect(mdComBox, "changed", http_request_method_change, requestPane);
     g_signal_connect(textField, "changed", http_request_url_change, requestPane);
 
@@ -244,5 +250,57 @@ static void fx_tree_view_edited(GtkCellRendererText *cell,
         return;
     }
     gint column = GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(cell), RENDER_EXTRA_PROP));
-    gtk_tree_store_set(GTK_TREE_STORE(treeModel),&iter,column,newStr,-1);
+    gtk_tree_store_set(GTK_TREE_STORE(treeModel), &iter, column, newStr, -1);
+}
+
+/**
+ * 点击按钮发起http请求
+ */
+static void http_send_http_request(GtkButton *btn, gpointer data) {
+    HttpRequestPane *pane = data;
+
+    SoupSession *session = soup_session_new();
+    SoupMessage *msg = soup_message_new(fx_get_request_method_str(GET), pane->url);
+
+
+    GtkTreeModel *pModel = gtk_tree_view_get_model(GTK_TREE_VIEW(pane->pTV));
+    GtkTreeModel *hModel = gtk_tree_view_get_model(GTK_TREE_VIEW(pane->hTV));
+
+    GtkTreeIter iter;
+
+    gboolean ok = gtk_tree_model_get_iter_first(pModel, &iter);
+
+    while (ok) {
+        gboolean opt;
+        gchararray key;
+        gchararray value;
+        gtk_tree_model_get(
+                hModel, &iter,
+                KEY, &key,
+                VALUE, &value,
+                OPT, &opt,
+                -1
+        );
+        if (opt) {
+            soup_message_headers_append(msg->request_headers, key, value);
+        }
+        ok = gtk_tree_model_iter_next(pModel, &iter);
+    }
+
+    soup_session_send_async(session, msg, NULL, http_request_async_callback, pane);
+
+}
+
+static void http_request_async_callback(GObject *object, GAsyncResult *res, gpointer user_data) {
+    GInputStream *stream;
+    GError *error = NULL;
+    SoupSession *session = SOUP_SESSION(object);
+//    SoupMessage *ms = soup_session_get_async_result_message(session,res);
+    stream = soup_session_send_finish(session, res, &error);
+    GObject *obj = g_async_result_get_source_object(res);
+    guint8 body[1024];
+    gsize size = g_input_stream_read(stream, &body, 1024, NULL, NULL);
+
+    printf("%s\n", body);
+
 }
