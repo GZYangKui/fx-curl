@@ -2,9 +2,9 @@
 // Created by yangkui on 2021/11/23.
 //
 
-#include <libsoup/soup.h>
 #include "../include/http_util.h"
 #include "../include/http_request_pane.h"
+#include "../include/http_req_pane_event.h"
 
 #define RENDER_EXTRA_PROP "bind-column"
 
@@ -51,6 +51,7 @@ extern HttpRequestPane *http_request_pane_new(gint64 id) {
     requestPane->id = id;
     requestPane->url = NULL;
     requestPane->current = 0;
+    requestPane->cancellable = NULL;
 
     gchararray path = GET_INNER_UI_RESOURCE(widget/HttpReqPane.ui);
     GtkBuilder *builder = gtk_builder_new_from_resource(path);
@@ -69,7 +70,14 @@ extern HttpRequestPane *http_request_pane_new(gint64 id) {
     g_signal_connect(mdComBox, "changed", http_request_method_change, requestPane);
     g_signal_connect(textField, "changed", http_request_url_change, requestPane);
 
+
+    requestPane->footPane = GTK_WIDGET(gtk_builder_get_object(builder, "footPane"));
     requestPane->content = GTK_WIDGET(gtk_builder_get_object(builder, "httpReqPane"));
+
+
+    GtkWidget *cancelBtn = GTK_WIDGET(gtk_builder_get_object(builder, "cancelReqBtn"));
+
+    g_signal_connect(cancelBtn, "clicked", fx_cancel_http_request, requestPane);
 
     return requestPane;
 }
@@ -286,21 +294,33 @@ static void http_send_http_request(GtkButton *btn, gpointer data) {
         }
         ok = gtk_tree_model_iter_next(pModel, &iter);
     }
+    pane->msg = msg;
+    pane->step = LOADING;
+    pane->cancellable = g_cancellable_new();
 
-    soup_session_send_async(session, msg, NULL, http_request_async_callback, pane);
-
+    update_http_request_status(pane);
+    soup_session_send_async(session, msg, pane->cancellable, http_request_async_callback, pane);
 }
 
-static void http_request_async_callback(GObject *object, GAsyncResult *res, gpointer user_data) {
+static void http_request_async_callback(GObject *object, GAsyncResult *res, gpointer userData) {
     GInputStream *stream;
     GError *error = NULL;
+    HttpRequestPane *pane = userData;
     SoupSession *session = SOUP_SESSION(object);
-//    SoupMessage *ms = soup_session_get_async_result_message(session,res);
+    gsize contentLen = soup_message_headers_get_content_length(pane->msg->response_headers);
+    printf("Content Len:%ld\n", contentLen);
     stream = soup_session_send_finish(session, res, &error);
     GObject *obj = g_async_result_get_source_object(res);
-    guint8 body[1024];
-    gsize size = g_input_stream_read(stream, &body, 1024, NULL, NULL);
+//    guint8 body[2048];
+//    gsize size = g_input_stream_read(stream, &body, 2048, NULL, NULL);
 
-    printf("%s\n", body);
+//    printf("%s\n", body);
 
+    pane->step = RESPONSE;
+    update_http_request_status(pane);
+
+    //free cancellable object
+    if (pane->cancellable) {
+        g_object_unref(pane->cancellable);
+    }
 }

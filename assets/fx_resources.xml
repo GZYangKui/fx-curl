@@ -22,5 +22,6 @@
         <file>img/delete.svg</file>
         <file>img/help.svg</file>
         <file>img/add_round.svg</file>
+        <file>img/resp_place_holder.svg</file>
     </gresource>
 </gresources>
